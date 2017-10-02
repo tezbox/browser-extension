@@ -1,0 +1,54 @@
+html {
+  background: #f9f9f9;
+  height: 500px!important;
+  padding: 10px;
+  overflow: hidden;
+  box-sizing: border-box;
+  width: 357px!important;
+}
+.btn{
+    text-transform:uppercase;
+    font-weight:bold;
+}
+h1{
+    font-size:1.6em!important;
+    text-transform:uppercase;
+    padding-bottom:5px;
+    border-bottom: 1px solid #aaa;
+    font-weight:bold;
+}
+.addressDetails{
+    margin-top:10px;
+    margin-bottom:20px;
+}
+.addressDetails h5{
+    font-size:.9em!important;
+    font-weight:bold;
+    color:#aaa;
+}
+.addressDetails strong{
+    color:green;
+}
+.header{
+    margin-bottom: 15px;
+}
+.mnemonic{
+    padding: 2px 4px;
+    font-size: 90%;
+    color: #c7254e;
+    background-color: #f9f2f4;
+    border-radius: 4px;
+    margin-bottom:15px;
+}
+.logo{
+        font-size: 2em;
+}
+.logoSmall {
+    position:relative;
+    top:-5px;
+}
+.logoBig {
+    max-width:200px;
+    display:block;
+    margin:0 auto;
+}

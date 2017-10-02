@@ -1,0 +1,51 @@
+<div>
+    <div class="row header">
+        <div class="col-xs-6">
+            <span class="logo"><img class="logoSmall" src="images/icon-38.png" /> TezBox</span>
+        </div>
+        <div class="col-xs-6 text-right">
+            <a ng-click="lock()" class="btn btn-default"><i class="fa fa-lock" aria-hidden="true"></i></a>
+        </div>
+    </div>
+    
+    <div class="row addressSelect">
+        <div class="col-xs-12">
+            <div class="input-group">
+              <select class="form-control" ng-model="addressIndex" ng-options="o for o in addresses" ng-change="loadAddress()"></select>
+              <span class="input-group-btn">
+                <a ng-click="add()" class="btn btn-primary">Add <i class="fa fa-plus" aria-hidden="true"></i></a>
+              </span>
+            </div>
+        </div>
+    </div>
+    <div class="row addressDetails text-center">
+        <div class="col-xs-12">
+            <h1 ng-show="!editMode">{{address.title}}</h1>
+            <div ng-show="editMode" style="    margin-top: 16px;" class="input-group">
+              <input type="text" class="form-control" ng-model="address.title">
+              <span class="input-group-btn">
+                <a ng-click="save()" class="btn btn-success">Save</a>
+              </span>
+            </div>
+            <h5>{{address.keys.pkh}}</h5>
+            <strong>Balance: {{address.balance}}</strong>
+        </div>
+    </div>
+    <div class="row addressOptions">
+        <div class="col-xs-12 text-center">
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <a ng-click="editMode = true;" class="btn btn-default">Edit</a>
+                <a ng-click="refresh()" class="btn btn-default">Refresh</a>
+                <a ng-click="copy()" class="btn btn-default">Copy</a>
+                <a ng-click="send()" class="btn btn-default">Send</a>
+            </div>
+            
+        </div>
+    </div>
+    <div class="row text-center">
+        <div class="col-xs-12 text-center">
+        <h1>Transactions</h1>
+        <strong>Under Development</strong>
+        </div>
+    </div>
+</div>
