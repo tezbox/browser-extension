@@ -1,6 +1,12 @@
 # TezBox Chrome Plugin
 You can download the TezBox chrome plugin here: https://github.com/tezbox/tezbox-chrome-plugin/raw/master/src.crx
 
+To install (requires Chrome):
+1) Download the plugin above - this should download as "src.crx"
+2) Go to chrome://extensions/ in your  (Or Settings > Extensions)
+3) Drag and drop the "src.crx" file onto the Extensions page (should likely be in your Downloads Directory)
+4) Install
+
 !![Image two](https://tezbox.github.io/img/cp-2.jpg) ![Image three](https://tezbox.github.io/img/cp-3.jpg)
 
 ### Future Development
