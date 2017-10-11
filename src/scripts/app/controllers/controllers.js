@@ -82,11 +82,11 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
         };
         $http({
             method: 'POST',
-            url: 'https://tezos.ostraca.org//blocks/head/proto/context/contracts/'+keys.pkh+"/balance",
+            url: 'https://tezrpc.me/api/blocks/prevalidation/proto/context/contracts/'+keys.pkh+"/balance",
             data: '{}'
         }).then(function(r){
-            console.log(r.data.ok);
-            $scope.address.balance = r.data.ok.toFixed(2)+"ꜩ";
+            var bal = parseInt(r.data.ok)/100;
+            $scope.address.balance = bal.toFixed(2)+"ꜩ";
         });
     }
     $scope.refresh = function(){
@@ -96,6 +96,7 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
         copyToClipboard($scope.address.keys.pkh);
     };
     $scope.send = function(){
+        window.addressIndex = $scope.addressIndex;
         $location.path('/send');
     };
     $scope.refresh();
@@ -182,9 +183,46 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
         //Load up things here
     };
 }])
-.controller('SendController', ['$scope', '$location', function($scope, $location) {
+.controller('SendController', ['$scope', '$location', 'Storage', function($scope, $location, Storage) {
+    $scope.sending = false;
+    $scope.sendError = false;
+    $scope.amount = 0;
+    var ss = Storage.loadStore();
+    if (!ss || !ss.encryptedMnemonic){
+         $location.path('/new');
+    }
+    $scope.addresses = ss.addresses;
     $scope.send = function(){
-        alert("Under Development");
+        if (!$scope.amount || !$scope.amount) {
+          alert("Please enter amount and a destination");
+          return;
+        }
+        var i = $scope.addresses.indexOf(window.addressIndex);
+        var keys = eztz.generateKeysFromSeedMulti(ss.temp.mnemonic, '', i);
+        $scope.sendError = false;
+        $scope.sending = true;
+        var am = $scope.amount * 100;
+        am = am.toFixed(0);
+        
+        var operation = {
+          "kind": "transaction",
+          "amount": am, // This is in centiles, i.e. 100 = 1.00 tez
+          "destination": $scope.toaddress
+        };
+        console.log(operation);
+        console.log(keys);
+        window.eztz.sendOperation(operation, keys, 0, $scope.endPayment);
+    }
+    $scope.endPayment = function(r){
+        $scope.$apply(function(){
+          $scope.sending = false;
+          console.log(r);
+          if (typeof r.injectedOperation != 'undefined'){
+            $location.path('/main');
+          } else {
+            $scope.sendError = true;
+          }
+        });
     }
     $scope.cancel = function(){
         $location.path('/main');
