@@ -1,5 +1,5 @@
 app.controller('CreateController', ['$scope', '$location', 'Storage', function($scope, $location, Storage) {
-    $scope.mnemonic = window.eztz.generateMnemonic();
+    $scope.mnemonic = window.eztz.crypto.generateMnemonic();
     $scope.password = '';
     $scope.password2 = '';
     $scope.cancel = function(){
@@ -18,85 +18,117 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
             alert("Passwords do not match");
             return;
         }
-        var ns = {
+        var identity = {
             temp : {
                 mnemonic : $scope.mnemonic,
                 password : $scope.password,
             },
             encryptedMnemonic : sjcl.encrypt($scope.password, $scope.mnemonic),
-            addresses : ['Address 1'],
+            accounts : [],
         };
-        Storage.setStore(ns);
-        $location.path('/main');
+        //Create free initial 
+        var keys = window.eztz.crypto.generateKeys(identity.temp.mnemonic, identity.temp.password);
+        window.eztz.rpc.account(keys).then(function(r){
+          identity.accounts.push({
+            title : 'Account 1',
+            pkh : r
+          });
+          Storage.setStore(identity);
+          $location.path('/main');
+        });
     };
 }])
 .controller('MainController', ['$scope', '$location', '$http', 'Storage', function($scope, $location, $http, Storage) {
-    
     var ss = Storage.loadStore();
     if (!ss || !ss.encryptedMnemonic){
+      //not set or not unlocked
          $location.path('/new');
     }
     $scope.editMode = false;
-    $scope.addressIndex = ss.addresses[0];
-    $scope.addresses = ss.addresses;
-    $scope.address = {};
+    $scope.accounts = ss.accounts;
+    $scope.account = ss.accounts[0];
+    $scope.accountDetails = {};
     $scope.lock = function(){
         ss.temp = {};
         Storage.setStore(ss);
-         $location.path('/unlock');
+        $location.path('/unlock');
+    }
+    var updateActive = function(){
+      ss.account = {
+        balance : $scope.accountDetails.balance,
+        title : $scope.account.title,
+        tz1 : $scope.account.pkh,
+      }
+      Storage.setStore(ss);
     }
     $scope.save = function(){
-        if (!$scope.address.title){
+        if (!$scope.account.title){
             alert("Please enter your address title");
             return;
         }
-        var i = $scope.addresses.indexOf($scope.addressIndex);
-        $scope.addresses[i] = '';
-        if ($scope.addresses.indexOf($scope.address.title) >= 0){
-            alert("Please use a unique address title");
-            return;
-        }
-        $scope.addresses[i] = $scope.address.title;
-        ss.addresses = $scope.addresses;
-        $scope.addressIndex = $scope.addresses[i];
+        var i = $scope.accounts.indexOf($scope.account);
+        $scope.accounts[i] = $scope.account;
+        ss.accounts = $scope.accounts;
         Storage.setStore(ss);
         $scope.refresh();
         $scope.editMode = false;
     };
     $scope.add = function(){
-        var i = ss.addresses.length + 1;
-        var an = "Address " + i;
-        ss.addresses.push(an);
-        $scope.addresses = ss.addresses;
-        $scope.addressIndex = ss.addresses[i-1];
-        $scope.refresh();
-        Storage.setStore(ss);
+      var keys = window.eztz.crypto.generateKeys(ss.temp.mnemonic, ss.temp.password);
+      window.eztz.rpc.account(keys).then(function(r){
+        $scope.$apply(function(){
+          var i = $scope.accounts.length + 1;
+          var an = "Account " + i;
+          $scope.account = {
+            title : an,
+            pkh : r
+          };
+          $scope.accounts.push($scope.account);
+          ss.accounts = $scope.accounts;
+          Storage.setStore(ss);
+          $scope.refresh();
+        });
+      });
     };
-    $scope.loadAddress = function(){
-        var i = $scope.addresses.indexOf($scope.addressIndex);
-        var keys = eztz.generateKeysFromSeedMulti(ss.temp.mnemonic, '', i);
-        $scope.address = {
-            title : $scope.addressIndex,
+    var formatMoney = function(n, c, d, t){
+      var c = isNaN(c = Math.abs(c)) ? 2 : c, 
+        d = d == undefined ? "." : d, 
+        t = t == undefined ? "," : t, 
+        s = n < 0 ? "-" : "", 
+        i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c))), 
+        j = (j = i.length) > 3 ? j % 3 : 0;
+       return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+     };
+    $scope.loadAccount = function(a){
+        $scope.account = a;
+        $scope.accountDetails = {
             balance : "Loading...",
-            keys : keys,
+            usd : "Loading...",
         };
         $http({
             method: 'POST',
-            url: 'https://tezrpc.me/api/blocks/prevalidation/proto/context/contracts/'+keys.pkh+"/balance",
+            url: 'https://tezrpc.me/api/blocks/prevalidation/proto/context/contracts/'+a.pkh+"/balance",
             data: '{}'
         }).then(function(r){
             var bal = parseInt(r.data.ok)/100;
-            $scope.address.balance = bal.toFixed(2)+"ꜩ";
+            $scope.accountDetails.balance = formatMoney(bal, 2, '.', ',')+"ꜩ";
+            var usdbal = bal * 1.78;
+            $scope.accountDetails.usd = "$"+formatMoney(usdbal, 2, '.', ',')+"USD";
+            updateActive();
         });
+        updateActive();
+        setTimeout(function(){
+        window.jdenticon();
+        }, 100);
     }
     $scope.refresh = function(){
-        $scope.loadAddress();
+        $scope.loadAccount($scope.account);
     };
     $scope.copy = function(){
-        copyToClipboard($scope.address.keys.pkh);
+        copyToClipboard($scope.account.pkh);
     };
     $scope.send = function(){
-        window.addressIndex = $scope.addressIndex;
+        window.account = $scope.account;
         $location.path('/send');
     };
     $scope.refresh();
@@ -163,15 +195,15 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
            alert("Incorrect password");
             return;
         }
-        var ns = {
+        var identity = {
             temp : {
                 mnemonic : mnemonic,
                 password : $scope.password,
             },
             encryptedMnemonic : ss.encryptedMnemonic,
-            addresses : ss.addresses,
+            accounts : ss.accounts,
         };
-        Storage.setStore(ns);
+        Storage.setStore(identity);
         $location.path('/main');
     };
 }])
@@ -191,14 +223,14 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
     if (!ss || !ss.encryptedMnemonic){
          $location.path('/new');
     }
-    $scope.addresses = ss.addresses;
+    $scope.account = window.account;
     $scope.send = function(){
         if (!$scope.amount || !$scope.amount) {
           alert("Please enter amount and a destination");
           return;
         }
-        var i = $scope.addresses.indexOf(window.addressIndex);
-        var keys = eztz.generateKeysFromSeedMulti(ss.temp.mnemonic, '', i);
+        var keys = window.eztz.crypto.generateKeys(ss.temp.mnemonic, ss.temp.password);
+        keys.pkh = $scope.account.pkh;
         $scope.sendError = false;
         $scope.sending = true;
         var am = $scope.amount * 100;
@@ -206,17 +238,15 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
         
         var operation = {
           "kind": "transaction",
-          "amount": am, // This is in centiles, i.e. 100 = 1.00 tez
-          "destination": $scope.toaddress
+          "amount": am,
+          "destination": $scope.toaddress,
+          "parameters": eztz.utility.ml2tzjson($scope.parameters)
         };
-        console.log(operation);
-        console.log(keys);
-        window.eztz.sendOperation(operation, keys, 0, $scope.endPayment);
+        window.eztz.rpc.sendOperation(operation, keys, 0).then($scope.endPayment);
     }
     $scope.endPayment = function(r){
         $scope.$apply(function(){
           $scope.sending = false;
-          console.log(r);
           if (typeof r.injectedOperation != 'undefined'){
             $location.path('/main');
           } else {

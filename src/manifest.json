@@ -37,7 +37,8 @@
     "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
     "web_accessible_resources": [
         "http://fonts.googleapis.com/",
-        "https://*.google-analytics.com/**/*"
+        "https://*.google-analytics.com/**/*",
+        "scripts/inject.js"
     ],
     "content_scripts": [
         {

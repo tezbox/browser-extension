@@ -7,45 +7,62 @@
             <a ng-click="lock()" class="btn btn-default"><i class="fa fa-lock" aria-hidden="true"></i></a>
         </div>
     </div>
-    
-    <div class="row addressSelect">
+    <div class="row addressDetails">
         <div class="col-xs-12">
-            <div class="input-group">
-              <select class="form-control" ng-model="addressIndex" ng-options="o for o in addresses" ng-change="loadAddress()"></select>
+            <h1 class="walletTitle" ng-show="!editMode">
+              <div class="dropdown left">
+								<button class="icon-button" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+									<i class="fa fa-angle-down" aria-hidden="true"></i>
+								</button>
+								<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+									<li ng-repeat="a in accounts track by a.pkh"><a ng-click="loadAccount(a)">{{a.title}}</a></li>
+									<li role="separator" class="divider"></li>
+									<li><a ng-click="add()">Add Account</a></li>
+								</ul>
+							</div>
+              {{account.title}}
+							<div class="dropdown right">
+								<button class="icon-button" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+									<i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+								</button>
+								<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+									<li><a ng-click="editMode = true;">Edit Title</a></li>
+									<li><a ng-click="copy()">Copy Address</a></li>
+									<li><a ng-click="delegate()">Manage Delegate</a></li>
+									<li><a ng-click="export()">Export</a></li>
+								</ul>
+							</div>
+						</h1>
+            <div ng-show="editMode" style="    margin-top: 17px;" class="input-group">
+              <input type="text" class="form-control" ng-model="account.title">
               <span class="input-group-btn">
-                <a ng-click="add()" class="btn btn-primary">Add <i class="fa fa-plus" aria-hidden="true"></i></a>
+                <a ng-click="save()" class="btn btn-success">Save</a>
               </span>
             </div>
         </div>
     </div>
     <div class="row addressDetails text-center">
-        <div class="col-xs-12">
-            <h1 ng-show="!editMode">{{address.title}}</h1>
-            <div ng-show="editMode" style="    margin-top: 16px;" class="input-group">
-              <input type="text" class="form-control" ng-model="address.title">
-              <span class="input-group-btn">
-                <a ng-click="save()" class="btn btn-success">Save</a>
-              </span>
-            </div>
-            <h5>{{address.keys.pkh}}</h5>
-            <strong>Balance: {{address.balance}}</strong>
+        <div class="col-xs-3">
+          <svg width="70" height="70" data-jdenticon-value="{{account.pkh}}"></svg>
+        </div>
+        <div class="col-xs-9">
+            <h5 class="address">{{account.pkh}}</h5>
+            <h5>{{accountDetails.balance}} <button ng-click="refresh()" class="icon-button" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+									<i class="fa fa-refresh" aria-hidden="true"></i>
+								</button>
+                </h5>
         </div>
     </div>
-    <div class="row addressOptions">
+    <div class="row text-center" style="margin-top:20px;">
         <div class="col-xs-12 text-center">
-            <div class="btn-group" role="group" aria-label="Basic example">
-                <a ng-click="editMode = true;" class="btn btn-default">Edit</a>
-                <a ng-click="refresh()" class="btn btn-default">Refresh</a>
-                <a ng-click="copy()" class="btn btn-default">Copy</a>
-                <a ng-click="send()" class="btn btn-default">Send</a>
-            </div>
-            
+        <h1 class="walletTitle">Transactions
+        <div class="dropdown right">
+          <button ng-click="send()" class="icon-button" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            <i class="fa fa-send" aria-hidden="true"></i>
+          </button>
         </div>
-    </div>
-    <div class="row text-center">
-        <div class="col-xs-12 text-center">
-        <h1>Transactions</h1>
-        <strong>Under Development</strong>
+        </h1>
+        <strong>No transactions available</strong>
         </div>
     </div>
 </div>

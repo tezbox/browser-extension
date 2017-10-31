@@ -6,9 +6,56 @@ html {
   box-sizing: border-box;
   width: 357px!important;
 }
+body{
+	font-family: 'Arimo', sans-serif!important;
+}
 .btn{
     text-transform:uppercase;
     font-weight:bold;
+}
+.blocky {
+    width: 70px;
+    height: 70px;
+    border-radius: 100%;
+}
+.poweredby{
+  display:none;
+}
+.walletTitle {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    padding-right: 50px;
+    padding-left: 50px;
+    margin-top: 11px;
+    text-align: center;
+    cursor:pointer;
+}
+.walletTitle .dropdown-menu li a{
+      text-transform: none!important;
+    text-align: left!important;
+}
+.walletTitle .dropdown-menu {
+  right:0!important;
+  left: inherit;
+}
+.walletTitle .dropdown.left {
+  position: absolute;
+  left: 20px;
+  top: 10px;
+}
+.walletTitle .dropdown.right {
+  position: absolute;
+  right: 20px;
+  top: 10px;
+}
+.icon-button {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    outline: none;
+    border: 0;
+    background: transparent;
 }
 h1{
     font-size:1.6em!important;
@@ -18,16 +65,22 @@ h1{
     font-weight:bold;
 }
 .addressDetails{
-    margin-top:10px;
-    margin-bottom:20px;
+
+}
+.addressDetails h5.address{
+    line-height:2em!important;
+    font-size:.9em!important;
+    color:#aaa;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 .addressDetails h5{
-    font-size:.9em!important;
+    line-height:2em!important;
+    font-size:1.6em!important;
     font-weight:bold;
-    color:#aaa;
-}
-.addressDetails strong{
-    color:green;
+    color:#0AC474;
+    margin: 0;
 }
 .header{
     margin-bottom: 15px;
