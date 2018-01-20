@@ -28,7 +28,7 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
         };
         //Create free initial 
         var keys = window.eztz.crypto.generateKeys(identity.temp.mnemonic, identity.temp.password);
-        window.eztz.rpc.account(keys).then(function(r){
+        window.eztz.rpc.freeAccount(keys).then(function(r){
           identity.accounts.push({
             title : 'Account 1',
             pkh : r
@@ -73,9 +73,15 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
         $scope.refresh();
         $scope.editMode = false;
     };
+    $scope.remove = function(){
+      var i = $scope.accounts.indexOf($scope.account);
+      $scope.accounts.splice(i, 1);
+      $scope.account = $scope.accounts[0];
+      $scope.refresh();
+    };
     $scope.add = function(){
       var keys = window.eztz.crypto.generateKeys(ss.temp.mnemonic, ss.temp.password);
-      window.eztz.rpc.account(keys).then(function(r){
+      window.eztz.rpc.freeAccount(keys).then(function(r){
         $scope.$apply(function(){
           var i = $scope.accounts.length + 1;
           var an = "Account " + i;
@@ -130,6 +136,14 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
     $scope.send = function(){
         window.account = $scope.account;
         $location.path('/send');
+    };
+    $scope.delegate = function(){
+        window.account = $scope.account;
+        $location.path('/delegate');
+    };
+    $scope.qr = function(){
+        window.account = $scope.account;
+        $location.path('/qr');
     };
     $scope.refresh();
     copyToClipboard = function(text) {
@@ -240,7 +254,7 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
           "kind": "transaction",
           "amount": am,
           "destination": $scope.toaddress,
-          "parameters": eztz.utility.ml2tzjson($scope.parameters)
+          "parameters": ($scope.parameters ? eztz.utility.sexp2mic($scope.parameters) : $scope.parameters)
         };
         window.eztz.rpc.sendOperation(operation, keys, 0).then($scope.endPayment);
     }
@@ -254,6 +268,59 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
           }
         });
     }
+    $scope.cancel = function(){
+        $location.path('/main');
+    }
+}])
+.controller('DelegateController', ['$scope', '$location', 'Storage', function($scope, $location, Storage) {
+    $scope.delegateType = '';
+    $scope.delegate = '';
+    $scope.account = window.account;
+    window.eztz.node.query('/blocks/head/proto/context/contracts/'+$scope.account.pkh+'/delegate').then(function(r){
+      console.log(r);
+      $scope.delegate = r;
+      if (r == 'tz1TwYbKYYJxw7AyubY4A9BUm2BMCPq7moaC' || r == 'tz1UsgSSdRwwhYrqq7iVp2jMbYvNsGbWTozp'){
+        $scope.delegateType = r;
+      }
+      $scope.$apply(function(){});
+    });
+    
+    $scope.sending = false;
+    $scope.sendError = false;
+    $scope.amount = 0;
+    var ss = Storage.loadStore();
+    if (!ss || !ss.encryptedMnemonic){
+         $location.path('/new');
+    }
+    $scope.save = function(){
+        if ($scope.delegateType) $scope.delegate = $scope.delegateType;
+        if (!$scope.delegate) {
+          alert("Please select a valid delegate");
+          return;
+        }
+        var keys = window.eztz.crypto.generateKeys(ss.temp.mnemonic, ss.temp.password);
+        keys.pkh = $scope.account.pkh;
+        $scope.sendError = false;
+        $scope.sending = true;
+        
+        window.eztz.rpc.setDelegate(keys, $scope.account.pkh, $scope.delegate, 0).then($scope.end);
+    }
+    $scope.end = function(r){
+        $scope.$apply(function(){
+          $scope.sending = false;
+          if (typeof r.injectedOperation != 'undefined'){
+            $location.path('/main');
+          } else {
+            $scope.sendError = true;
+          }
+        });
+    }
+    $scope.cancel = function(){
+        $location.path('/main');
+    }
+}])
+.controller('QrController', ['$scope', '$location', 'Storage', function($scope, $location, Storage) {
+    $scope.account = window.account;
     $scope.cancel = function(){
         $location.path('/main');
     }

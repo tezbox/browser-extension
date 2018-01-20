@@ -34,7 +34,7 @@ app.controller('SendController', ['$scope', '$location', 'Storage', function($sc
           "kind": "transaction",
           "amount": am, // This is in centiles, i.e. 100 = 1.00 tez
           "destination": $scope.toaddress,
-          "parameters": eztz.utility.ml2tzjson($scope.parameters)
+          "parameters": ($scope.parameters ? eztz.utility.sexp2mic($scope.parameters) : $scope.parameters)
         };
         console.log(operation);
         console.log(keys);

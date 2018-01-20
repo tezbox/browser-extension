@@ -32,6 +32,14 @@ app.config(function($routeProvider) {
         templateUrl : chrome.extension.getURL("views/send.html"),
         controller : "SendController",
     })
+    .when("/delegate", {
+        templateUrl : chrome.extension.getURL("views/delegate.html"),
+        controller : "DelegateController",
+    })
+    .when("/qr", {
+        templateUrl : chrome.extension.getURL("views/qr.html"),
+        controller : "QrController",
+    })
     .otherwise({
         redirectTo: '/new'
     });
