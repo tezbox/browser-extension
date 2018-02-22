@@ -19,7 +19,7 @@ app.controller('SendController', ['$scope', '$location', 'Storage', function($sc
       $scope.$apply();
     });
     $scope.send = function(){
-        if (!$scope.amount || !$scope.amount) {
+        if (!$scope.amount || !$scope.toaddress) {
           alert("Please enter amount and a destination");
           return;
         }
@@ -29,7 +29,7 @@ app.controller('SendController', ['$scope', '$location', 'Storage', function($sc
         $scope.sending = true;
         var am = $scope.amount * 100;
         am = am.toFixed(0);
-        
+
         var operation = {
           "kind": "transaction",
           "amount": am, // This is in centiles, i.e. 100 = 1.00 tez
