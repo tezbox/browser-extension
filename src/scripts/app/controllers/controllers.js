@@ -113,7 +113,7 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
         };
         $http({
             method: 'POST',
-            url: 'https://tezrpc.me/api/blocks/prevalidation/proto/context/contracts/'+a.pkh+"/balance",
+            url: window.eztz.node.activeProvider+"/blocks/prevalidation/proto/context/contracts/"+a.pkh+"/balance",
             data: '{}'
         }).then(function(r){
             var bal = parseInt(r.data.ok)/100;
