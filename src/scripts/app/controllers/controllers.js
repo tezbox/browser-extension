@@ -26,7 +26,9 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
             encryptedMnemonic : sjcl.encrypt($scope.password, $scope.mnemonic),
             accounts : [],
         };
+        
         //Create free initial
+        $scope.text = "Creating...";
         var keys = window.eztz.crypto.generateKeys(identity.temp.mnemonic, identity.temp.password);
         window.eztz.rpc.freeDefaultAccount(keys)
         .then(function(){
@@ -37,6 +39,14 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
             Storage.setStore(identity);
             $location.path("/main");
             $scope.$apply();
+        })
+        .catch(function(e){
+            $scope.$apply(function(){
+                $scope.title = "Error"
+                $scope.text = e + "\nThe Tezos node might be busy. Please try again later.";
+                $scope.password = '';
+                $scope.password2 = '';
+            });
         });
     };
 }])
