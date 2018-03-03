@@ -26,15 +26,17 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
             encryptedMnemonic : sjcl.encrypt($scope.password, $scope.mnemonic),
             accounts : [],
         };
-        //Create free initial 
+        //Create free initial
         var keys = window.eztz.crypto.generateKeys(identity.temp.mnemonic, identity.temp.password);
-        window.eztz.rpc.freeAccount(keys).then(function(r){
-          identity.accounts.push({
-            title : 'Account 1',
-            pkh : r
-          });
-          Storage.setStore(identity);
-          $location.path('/main');
+        window.eztz.rpc.freeDefaultAccount(keys)
+        .then(function(){
+            identity.accounts.push({
+                title: "Account 1",
+                pkh: keys.pkh,
+            });
+            Storage.setStore(identity);
+            $location.path("/main");
+            $scope.$apply();
         });
     };
 }])
