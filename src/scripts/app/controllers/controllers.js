@@ -26,7 +26,7 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
             encryptedMnemonic : sjcl.encrypt($scope.password, $scope.mnemonic),
             accounts : [],
         };
-        
+
         //Create free initial
         $scope.text = "Creating...";
         var keys = window.eztz.crypto.generateKeys(identity.temp.mnemonic, identity.temp.password);
@@ -35,6 +35,7 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
             identity.accounts.push({
                 title: "Account 1",
                 pkh: keys.pkh,
+                pk: keys.pk
             });
             Storage.setStore(identity);
             $location.path("/main");
@@ -67,9 +68,11 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
     }
     var updateActive = function(){
       ss.account = {
+        raw_balance : $scope.accountDetails.raw_balance,
         balance : $scope.accountDetails.balance,
         title : $scope.account.title,
         tz1 : $scope.account.pkh,
+        pk : $scope.account.pk
       }
       Storage.setStore(ss);
     }
@@ -128,7 +131,9 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
             url: window.eztz.node.activeProvider+"/blocks/prevalidation/proto/context/contracts/"+a.pkh+"/balance",
             data: '{}'
         }).then(function(r){
-            var bal = parseInt(r.data.ok)/100;
+            var rb = parseInt(r.data.ok);
+            $scope.accountDetails.raw_balance = rb;
+            bal = rb/100; 
             $scope.accountDetails.balance = formatMoney(bal, 2, '.', ',')+"ꜩ";
             var usdbal = bal * 1.78;
             $scope.accountDetails.usd = "$"+formatMoney(usdbal, 2, '.', ',')+"USD";

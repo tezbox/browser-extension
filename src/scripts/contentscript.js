@@ -5,7 +5,8 @@ window.addEventListener("message", function(event) {
   if (typeof event.data.data != "undefined")
     dd = event.data.data;
   chrome.runtime.sendMessage({method: event.data.type, data : dd}, function(response) {
-    window.postMessage({ direction : "out", type : event.data.type, response : response.data}, "*");
+  	if(response)
+    	window.postMessage({ direction : "out", type : event.data.type, response : response.data}, "*");
   });
 }, false);
 
