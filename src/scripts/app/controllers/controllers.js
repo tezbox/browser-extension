@@ -111,15 +111,6 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
         });
       });
     };
-    var formatMoney = function(n, c, d, t){
-      var c = isNaN(c = Math.abs(c)) ? 2 : c, 
-        d = d == undefined ? "." : d, 
-        t = t == undefined ? "," : t, 
-        s = n < 0 ? "-" : "", 
-        i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c))), 
-        j = (j = i.length) > 3 ? j % 3 : 0;
-       return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
-     };
     $scope.loadAccount = function(a){
         $scope.account = a;
         $scope.accountDetails = {
@@ -134,9 +125,9 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
             var rb = parseInt(r.data.ok);
             $scope.accountDetails.raw_balance = rb;
             bal = rb/100; 
-            $scope.accountDetails.balance = formatMoney(bal, 2, '.', ',')+"ꜩ";
+            $scope.accountDetails.balance = window.eztz.utility.formatMoney(bal, 2, '.', ',')+"ꜩ";
             var usdbal = bal * 1.78;
-            $scope.accountDetails.usd = "$"+formatMoney(usdbal, 2, '.', ',')+"USD";
+            $scope.accountDetails.usd = "$"+window.eztz.utility.formatMoney(usdbal, 2, '.', ',')+"USD";
             updateActive();
         });
         updateActive();
