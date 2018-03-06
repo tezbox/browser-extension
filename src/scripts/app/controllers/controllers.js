@@ -129,11 +129,8 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
             var usdbal = bal * 1.78;
             $scope.accountDetails.usd = "$"+window.eztz.utility.formatMoney(usdbal, 2, '.', ',')+"USD";
             updateActive();
+            window.jdenticon();
         });
-        updateActive();
-        setTimeout(function(){
-        window.jdenticon();
-        }, 100);
     }
     $scope.refresh = function(){
         $scope.loadAccount($scope.account);
