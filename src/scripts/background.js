@@ -31,10 +31,23 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           }      
         });
         chrome.windows.create({'url': chrome.extension.getURL("send.html"), 'type': 'popup','width': 357, 'height': 500,}, function(w) {
+          chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+            if (request.method === "resolvedTransaction") {
+              var obj = [];
+              obj.push(request.data);
+              localStorage.setItem("promise", JSON.stringify(obj));
+            } else if (request.method === "dissmisedTransaction") {
+              var obj = [];
+              obj.push(request.data);
+              localStorage.setItem("promise", JSON.stringify(obj));
+            }
+          });
           var l = (id) => {
             if(id === w.id){
               chrome.windows.onRemoved.removeListener(l);
-              sendResponse({data: tb.accounts});
+              var promise = JSON.parse(localStorage.getItem("promise"));
+              localStorage.removeItem("promise");
+              sendResponse({data: promise});
             }
           };
           chrome.windows.onRemoved.addListener(l);

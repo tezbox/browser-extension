@@ -38,19 +38,26 @@ app.controller('SendController', ['$scope', '$location', 'Storage', function($sc
         };
         console.log(operation);
         console.log(keys);
-        window.eztz.rpc.sendOperation(operation, keys, 0).then($scope.endPayment);
+        window.eztz.rpc.sendOperation(operation, keys, 0)
+        .then((res) => {
+          chrome.runtime.sendMessage({ method: "resolvedTransaction", data: res });
+          return res;
+        })
+        .then($scope.endPayment)
+        .catch((err) => {
+          chrome.runtime.sendMessage({ method: "dismissedTransaction", data: err });
+          return err;
+        })
+        .then($scope.endPayment);
     }
     $scope.endPayment = function(r){
         $scope.$apply(function(){
           $scope.sending = false;
-          if (typeof r.injectedOperation != 'undefined'){
-            window.close();
-          } else {
-            $scope.sendError = true;
-          }
+          window.close();
         });
     }
     $scope.cancel = function(){
+      chrome.runtime.sendMessage({ method: "dissmisedTransaction", data: "Transaction Canceled!" });
       window.close();
     }
 }])
