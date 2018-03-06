@@ -30,9 +30,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             'transfer' : request.data
           }      
         });
-        chrome.windows.create({'url': chrome.extension.getURL("send.html"), 'type': 'popup','width': 357, 'height': 500,}, function(window) {
-         });
-        sendResponse({data: tb.accounts});
+        chrome.windows.create({'url': chrome.extension.getURL("send.html"), 'type': 'popup','width': 357, 'height': 500,}, function(w) {
+          var l = (id) => {
+            if(id === w.id){
+              chrome.windows.onRemoved.removeListener(l);
+              sendResponse({data: tb.accounts});
+            }
+          };
+          chrome.windows.onRemoved.addListener(l);
+        });
+        return true;
       }
     } else
       sendResponse({error:true}); // snub them.
