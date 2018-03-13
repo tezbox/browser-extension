@@ -57,7 +57,7 @@ app.controller('SendController', ['$scope', '$location', 'Storage', function($sc
         });
     }
     $scope.cancel = function(){
-      chrome.runtime.sendMessage({ method: "dissmisedTransaction", data: "Transaction Canceled!" });
+      chrome.runtime.sendMessage({ method: "dismissedTransaction", data: "Transaction Canceled!" });
       window.close();
     }
 }])

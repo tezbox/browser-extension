@@ -36,7 +36,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
               var obj = [];
               obj.push(request.data);
               localStorage.setItem("promise", JSON.stringify(obj));
-            } else if (request.method === "dissmisedTransaction") {
+            } else if (request.method === "dismissedTransaction") {
               var obj = [];
               obj.push(request.data);
               localStorage.setItem("promise", JSON.stringify(obj));
