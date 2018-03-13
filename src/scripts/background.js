@@ -1,12 +1,15 @@
+var default_message = "Transaction Canceled!";
+var popup_result = default_message;
+// default response, used when popup is closed by clicking X button (listener does not fire)
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     var tb = JSON.parse(localStorage.getItem('tbstore'));
     if (!tb) {
-      sendResponse({data: "unavailable"});        
+      sendResponse({data: "unavailable"});
     } else if (request.method == "status"){
       if (typeof tb.temp.mnemonic == 'undefined') {
-        sendResponse({data: "locked"});        
+        sendResponse({data: "locked"});
       } else {
-        sendResponse({data: "available"});        
+        sendResponse({data: localStorage.getItem("counter")});
       }
     } else if (request.method == "getActiveAccount"){
       eztz.rpc.getBalance(tb.account.tz1)
@@ -20,6 +23,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       return true;
     } else if (request.method == "getAllAccounts"){
       sendResponse({data: tb.accounts});
+    } else if (request.method === "resolvedTransaction") {
+      popup_result = request.data
+    } else if (request.method === "dismissedTransaction") {
+      popup_result = request.data
     } else if (request.method == "initiateTransaction"){
       if (typeof tb.temp.mnemonic == 'undefined') {
         sendResponse({data: tb.accounts});
@@ -31,26 +38,13 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           }      
         });
         chrome.windows.create({'url': chrome.extension.getURL("send.html"), 'type': 'popup','width': 357, 'height': 500,}, function(w) {
-          chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-            if (request.method === "resolvedTransaction") {
-              var obj = [];
-              obj.push(request.data);
-              localStorage.setItem("promise", JSON.stringify(obj));
-            } else if (request.method === "dismissedTransaction") {
-              var obj = [];
-              obj.push(request.data);
-              localStorage.setItem("promise", JSON.stringify(obj));
-            }
-          });
-          var l = (id) => {
+          chrome.windows.onRemoved.addListener(function l(id) {
             if(id === w.id){
+              sendResponse({data: popup_result});
+              popup_result = default_message;
               chrome.windows.onRemoved.removeListener(l);
-              var promise = JSON.parse(localStorage.getItem("promise"));
-              localStorage.removeItem("promise");
-              sendResponse({data: promise});
             }
-          };
-          chrome.windows.onRemoved.addListener(l);
+          });          
         });
         return true;
       }
