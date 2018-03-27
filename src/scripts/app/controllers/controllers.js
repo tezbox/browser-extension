@@ -18,6 +18,7 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
             alert("Passwords do not match");
             return;
         }
+        window.showLoader();
         var identity = {
             temp : {
                 mnemonic : $scope.mnemonic,
@@ -29,13 +30,19 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
         //Create free initial 
         var keys = window.eztz.crypto.generateKeys(identity.temp.mnemonic, identity.temp.password);
         window.eztz.rpc.freeAccount(keys).then(function(r){
-          identity.accounts.push({
-            title : 'Account 1',
-            pkh : r
+          $scope.$apply(function(){
+            identity.accounts.push({
+              title : 'Account 1',
+              pkh : r
+            });
+            Storage.setStore(identity);
+            $location.path('/main');
+            $scope.refresh();
           });
-          Storage.setStore(identity);
-          $location.path('/main');
-        });
+        }).catch(function(e){
+          window.hideLoader();
+          alert("Error");
+        });;
     };
 }])
 .controller('MainController', ['$scope', '$location', '$http', 'Storage', function($scope, $location, $http, Storage) {
@@ -81,6 +88,7 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
     };
     $scope.add = function(){
       var keys = window.eztz.crypto.generateKeys(ss.temp.mnemonic, ss.temp.password);
+      window.showLoader();
       window.eztz.rpc.freeAccount(keys).then(function(r){
         $scope.$apply(function(){
           var i = $scope.accounts.length + 1;
@@ -111,15 +119,14 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
             balance : "Loading...",
             usd : "Loading...",
         };
-        $http({
-            method: 'POST',
-            url: 'https://tezrpc.me/api/blocks/prevalidation/proto/context/contracts/'+a.pkh+"/balance",
-            data: '{}'
-        }).then(function(r){
-            var bal = parseInt(r.data.ok)/100;
+        window.showLoader();
+        window.eztz.rpc.getBalance(a.pkh).then(function(r){
+            var bal = window.eztz.utility.mintotz(r);
             $scope.accountDetails.balance = formatMoney(bal, 2, '.', ',')+"ꜩ";
             var usdbal = bal * 1.78;
             $scope.accountDetails.usd = "$"+formatMoney(usdbal, 2, '.', ',')+"USD";
+            window.hideLoader();
+            $scope.$apply(function(){});
             updateActive();
         });
         updateActive();
@@ -129,9 +136,11 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
     }
     $scope.refresh = function(){
         $scope.loadAccount($scope.account);
+        
     };
     $scope.copy = function(){
         copyToClipboard($scope.account.pkh);
+        alert("The address has been copied");
     };
     $scope.send = function(){
         window.account = $scope.account;
@@ -256,9 +265,11 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
           "destination": $scope.toaddress,
           "parameters": ($scope.parameters ? eztz.utility.sexp2mic($scope.parameters) : $scope.parameters)
         };
+        window.showLoader();
         window.eztz.rpc.sendOperation(operation, keys, 0).then($scope.endPayment);
     }
     $scope.endPayment = function(r){
+        window.hideLoader();
         $scope.$apply(function(){
           $scope.sending = false;
           if (typeof r.injectedOperation != 'undefined'){
@@ -276,11 +287,12 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
     $scope.delegateType = '';
     $scope.delegate = '';
     $scope.account = window.account;
-    window.eztz.node.query('/blocks/head/proto/context/contracts/'+$scope.account.pkh+'/delegate').then(function(r){
-      console.log(r);
-      $scope.delegate = r;
-      if (r == 'tz1TwYbKYYJxw7AyubY4A9BUm2BMCPq7moaC' || r == 'tz1UsgSSdRwwhYrqq7iVp2jMbYvNsGbWTozp'){
-        $scope.delegateType = r;
+    window.showLoader();
+    window.eztz.rpc.getDelegate($scope.account.pkh).then(function(r){
+      window.hideLoader();
+      $scope.delegate = r.delegate;
+      if (r.delegate == 'tz1TwYbKYYJxw7AyubY4A9BUm2BMCPq7moaC' || r.delegate == 'tz1UsgSSdRwwhYrqq7iVp2jMbYvNsGbWTozp'){
+        $scope.delegateType = r.delegate;
       }
       $scope.$apply(function(){});
     });
@@ -302,12 +314,14 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
         keys.pkh = $scope.account.pkh;
         $scope.sendError = false;
         $scope.sending = true;
-        
+        window.showLoader();
         window.eztz.rpc.setDelegate(keys, $scope.account.pkh, $scope.delegate, 0).then($scope.end);
     }
     $scope.end = function(r){
+        window.hideLoader();
         $scope.$apply(function(){
           $scope.sending = false;
+          console.log(r);
           if (typeof r.injectedOperation != 'undefined'){
             $location.path('/main');
           } else {
@@ -324,5 +338,9 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
     $scope.cancel = function(){
         $location.path('/main');
     }
+    $scope.copy = function(){
+        copyToClipboard($scope.account.pkh);
+        alert("The address has been copied");
+    };
 }])
 ;

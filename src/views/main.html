@@ -1,10 +1,10 @@
 <div>
-    <div class="row header">
+    <div class="row mainHeaderBox">
         <div class="col-xs-6">
-            <span class="logo"><img class="logoSmall" src="images/icon-38.png" /> TezBox</span>
+            <span class="logo"><img class="logoSmall" src="images/logo.jpg" /> TEZBOX</span>
         </div>
         <div class="col-xs-6 text-right">
-            <a ng-click="lock()" class="btn btn-default"><i class="fa fa-lock" aria-hidden="true"></i></a>
+            <a ng-click="lock()" class="btn btn-icon btn-default"><i class="fa fa-lock" aria-hidden="true"></i></a>
         </div>
     </div>
     <div class="row addressDetails">
@@ -27,41 +27,47 @@
 								</button>
 								<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
 									<li><a ng-click="editMode = true;">Edit Title</a></li>
-									<li><a ng-click="copy()">Copy Address</a></li>
-									<li><a ng-click="qr()">View QR</a></li>
 									<li><a ng-click="delegate()">Manage Delegate</a></li>
 									<li><a ng-click="remove()">Remove Account</a></li>
 								</ul>
 							</div>
 						</h1>
-            <div ng-show="editMode" style="    margin-top: 17px;" class="input-group">
+            <div ng-show="editMode" style="    margin-top: 14px;" class="input-group">
               <input type="text" class="form-control" ng-model="account.title">
               <span class="input-group-btn">
-                <a ng-click="save()" class="btn btn-success">Save</a>
+                <a ng-click="save()" class="btn btn-success btn-inner">Save</a>
               </span>
             </div>
         </div>
     </div>
-    <div class="row addressDetails text-center">
+    <div class="row addressDetails text-center" style="margin-top:10px;">
         <div class="col-xs-3">
           <svg width="70" height="70" data-jdenticon-value="{{account.pkh}}"></svg>
         </div>
         <div class="col-xs-9">
-            <h5 class="address">{{account.pkh}}</h5>
-            <h5>{{accountDetails.balance}} <button ng-click="refresh()" class="icon-button" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-									<i class="fa fa-refresh" aria-hidden="true"></i>
+            <h5 class="address">
+            <button ng-click="copy()" class="icon-button" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+									<i class="far fa-copy" aria-hidden="true"></i>
+								</button>
+                {{account.pkh}}
+                </h5>
+            <h5 class="balance">{{accountDetails.balance}} <button ng-click="refresh()" class="icon-button" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+									<i class="fas fa-sync" aria-hidden="true"></i>
 								</button>
                 </h5>
         </div>
     </div>
-    <div class="row text-center" style="margin-top:20px;">
-        <div class="col-xs-12 text-center">
-        <h1 class="walletTitle">Transactions
-        <div class="dropdown right">
-          <button ng-click="send()" class="icon-button" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-            <i class="fa fa-send" aria-hidden="true"></i>
-          </button>
+    <div class="row" style="margin-top:10px;">
+        <div class="col-xs-3 col-xs-offset-3" style="padding:2px;">
+          <a ng-click="send()" class="btn btn-success btn-small btn-block">Send</a>
         </div>
+        <div class="col-xs-3" style="padding:2px;">
+          <a ng-click="qr()" class="btn btn-success btn-small btn-block">Receive</a>
+        </div>
+    </div>
+    <div class="row text-center" style="margin-top:10px;">
+        <div class="col-xs-12 text-center">
+        <h1 class="walletTitle"><i class="fas fa-exchange-alt"></i> Transactions
         </h1>
         <strong>No transactions available</strong>
         </div>
