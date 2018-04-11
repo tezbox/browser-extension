@@ -27,7 +27,7 @@ app.controller('SendController', ['$scope', '$location', 'Storage', function($sc
         keys.pkh = ss.account.tz1;//todo
         $scope.sendError = false;
         $scope.sending = true;
-        var am = $scope.amount * 100;
+        var am = $scope.amount * 1000000;
         am = am.toFixed(0);
 
         var operation = {

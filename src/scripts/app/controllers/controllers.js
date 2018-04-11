@@ -124,9 +124,9 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
             var rb = parseInt(r);
             $scope.accountDetails.raw_balance = rb;
             bal = window.eztz.utility.mintotz(rb); 
-            $scope.accountDetails.balance = window.eztz.utility.formatMoney(bal, 2, '.', ',')+"ꜩ";
+            $scope.accountDetails.balance = window.eztz.utility.formatMoney(bal, 6, '.', ',')+"ꜩ";
             var usdbal = bal * 1.78;
-            $scope.accountDetails.usd = "$"+window.eztz.utility.formatMoney(usdbal, 2, '.', ',')+"USD";
+            $scope.accountDetails.usd = "$"+window.eztz.utility.formatMoney(usdbal, 6, '.', ',')+"USD";
             $scope.$apply();
             window.hideLoader();
             updateActive();
@@ -255,7 +255,7 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
         keys.pkh = $scope.account.pkh;
         $scope.sendError = false;
         $scope.sending = true;
-        var am = $scope.amount * 100;
+        var am = $scope.amount * 1000000;
         am = am.toFixed(0);
         
         var operation = {
