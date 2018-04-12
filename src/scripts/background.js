@@ -16,7 +16,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       .then((r) => {
         var rb = parseInt(r);
         tb.account.raw_balance = rb;
-        bal = window.eztz.utility.mintotz(rb);
+        var bal = window.eztz.utility.mintotz(rb);
         tb.account.balance = window.eztz.utility.formatMoney(bal, 6, '.', ',')+"ꜩ";
         localStorage.setItem("tbstore", JSON.stringify(tb));
         sendResponse({data: tb.account});
