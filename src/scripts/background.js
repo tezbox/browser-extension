@@ -6,7 +6,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (!tb) {
       sendResponse({data: "unavailable"});
     } else if (request.method == "status"){
-      if (typeof tb.temp.mnemonic == 'undefined') {
+      if (typeof tb.seed == 'undefined') {
         sendResponse({data: "locked"});
       } else {
         sendResponse({data: localStorage.getItem("counter")});
@@ -29,7 +29,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     } else if (request.method === "dismissedTransaction") {
       popup_result = request.data
     } else if (request.method == "initiateTransaction"){
-      if (typeof tb.temp.mnemonic == 'undefined') {
+      if (typeof tb.seed == 'undefined') {
         sendResponse({data: tb.accounts});
       } else {
         chrome.storage.local.set({ 

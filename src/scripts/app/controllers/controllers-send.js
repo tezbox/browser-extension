@@ -9,10 +9,7 @@ app.controller('SendController', ['$scope', '$location', 'Storage', function($sc
       $scope.toaddress = pay.address;
       $scope.amount = pay.amount;
       $scope.parameters = pay.parameters;
-      if (!ss || !ss.encryptedMnemonic){
-           window.close();
-      }
-      if (!ss.temp.mnemonic){
+      if (!ss || !ss.seed){
            window.close();
       }
       $scope.accounts = ss.accounts;
@@ -23,8 +20,11 @@ app.controller('SendController', ['$scope', '$location', 'Storage', function($sc
           alert("Please enter amount and a destination");
           return;
         }
-        var keys = window.eztz.crypto.generateKeys(ss.temp.mnemonic, ss.temp.password);
+        var keys = {};        
+        keys.pk = ss.account.pk;
         keys.pkh = ss.account.tz1;//todo
+        //breaks multiple accounts
+        keys.sk = ss.secrets[0];
         $scope.sendError = false;
         $scope.sending = true;
         var am = $scope.amount * 1000000;

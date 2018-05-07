@@ -54,7 +54,7 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
 }])
 .controller('MainController', ['$scope', '$location', '$http', 'Storage', function($scope, $location, $http, Storage) {
     var ss = Storage.loadStore();
-    if (!ss || !ss.encryptedMnemonic){
+    if (!ss || !ss.seed){
       //not set or not unlocked
          $location.path('/new');
     }
@@ -177,18 +177,32 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
 }])
 .controller('NewController', ['$scope', '$location', 'Storage', function($scope, $location, Storage) {
     var ss = Storage.loadStore();
-    if (ss && typeof ss.temp != 'undefined' && ss.temp.mnemonic && ss.temp.password){
+    if (ss && ss.seed) {
         $location.path('/main');
-    }  else if (ss && ss.encryptedMnemonic){
-        $location.path('/unlock');
     }
-    $scope.restore = function(){
-        $location.path('/restore');
-    };
-    $scope.create = function(){
-        $location.path('/create');
-    };
-    
+    else {	
+		// window.eztz.utility.b58decode("edsk35uM4amkh1KRFZZkZMNnSE5DZ5EwjH81VbzCxdxzVJytG1AbKd", window.eztz.prefix.edsk);
+    	fetch('https://faucet.smartcontractlabs.ee/')
+        .then(r => r.text())
+    	.then(r => window.eztz.utility.b58cdecode(r, window.eztz.prefix.edsk))
+    	.then(function (s) {
+    		var kp = window.eztz.library.sodium.crypto_sign_seed_keypair(s);
+    		var identity = {
+                seed : s,
+                accounts : [],
+                secrets : []
+            };
+            identity.accounts.push({
+                title: "Account 1",
+		        pk: window.eztz.utility.b58cencode(kp.publicKey, window.eztz.prefix.edpk),
+		        pkh: window.eztz.utility.b58cencode(window.eztz.library.sodium.crypto_generichash(20, kp.publicKey), window.eztz.prefix.tz1)
+            });
+            identity.secrets.push(window.eztz.utility.b58cencode(kp.privateKey, window.eztz.prefix.edsk));
+            Storage.setStore(identity);
+            $location.path("/main");
+            $scope.$apply();
+    	})
+    }
 }])
 .controller('UnlockController', ['$scope', '$location', 'Storage', function($scope, $location, Storage) {
     var ss = Storage.loadStore();
@@ -242,7 +256,7 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
     $scope.sendError = false;
     $scope.amount = 0;
     var ss = Storage.loadStore();
-    if (!ss || !ss.encryptedMnemonic){
+    if (!ss || !ss.seed){
          $location.path('/new');
     }
     $scope.account = window.account;
@@ -251,8 +265,11 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
           alert("Please enter amount and a destination");
           return;
         }
-        var keys = window.eztz.crypto.generateKeys(ss.temp.mnemonic, ss.temp.password);
+        var keys = {};
+        keys.pk = $scope.account.pk
         keys.pkh = $scope.account.pkh;
+        //breaks multiple accounts
+        keys.sk = ss.secrets[0];
         $scope.sendError = false;
         $scope.sending = true;
         var am = $scope.amount * 1000000;
