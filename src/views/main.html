@@ -69,7 +69,18 @@
         <div class="col-xs-12 text-center">
         <h1 class="walletTitle"><i class="fas fa-exchange-alt"></i> Transactions
         </h1>
-        <strong>No transactions available</strong>
+        
         </div>
+
+    </div>
+    <div style="height: 255px; overflow-y: scroll; font-family: monospace;">
+        <table  style="width: 100%;">
+            <tr ng-repeat="tx in history track by $index" ng-style="{ background: tx.direction === '>>' ? '#C000004C' : '#00A0004C' }">
+                    <td style="width: 5%; padding-left: 4px; padding-right: 4px;">{{tx.direction}}</td>
+                    <td style="width: 35%; padding-left: 6px; padding-right: 6px;"><a href="{{'https://tezex.info/transaction/' + tx.hash}}" ng-click="openTransaction(tx.hash)">{{tx.address.slice(0,11)}}..</a></td>
+                    <td style="width: 25%; padding-left: 6px; padding-right: 0px; text-align: right;">{{((tx.direction === '>>' ? -1 : 1) * tx.amount / 1000000).toFixed(6)}}</td>
+                    <td style="width: 35%; padding-left: 0px; padding-right: 12px; text-align: right;">{{tx.status}}</td>
+            </tr>
+        </table>
     </div>
 </div>

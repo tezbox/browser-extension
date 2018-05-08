@@ -12,7 +12,7 @@ app.controller('SendController', ['$scope', '$location', 'Storage', function($sc
       if (!ss || !ss.seed){
            window.close();
       }
-      $scope.accounts = ss.accounts;
+      $scope.account = ss.account;
       $scope.$apply();
     });
     $scope.send = function(){
@@ -51,10 +51,24 @@ app.controller('SendController', ['$scope', '$location', 'Storage', function($sc
         .then($scope.endPayment);
     }
     $scope.endPayment = function(r){
-        $scope.$apply(function(){
-          $scope.sending = false;
-          window.close();
+      $scope.sending = false;
+      if (typeof r.injectedOperation != 'undefined'){
+        ss.pending.push({
+          hash: r.injectedOperation,
+          status: "pending",
+          source: $scope.account.tz1,
+          time: new Date().toISOString(),
+          operations: [{
+            destination: $scope.toaddress,
+            amount: $scope.amount * 1000000,
+            kind: "transaction"
+          }]              
         });
+        Storage.setStore(ss);
+      } else {
+        $scope.sendError = true;
+      }
+      window.close();  
     }
     $scope.cancel = function(){
       chrome.runtime.sendMessage({ method: "dismissedTransaction", data: "Transaction Canceled!" });

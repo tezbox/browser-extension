@@ -62,11 +62,75 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
     $scope.accounts = ss.accounts;
     $scope.account = ss.accounts[0];
     $scope.accountDetails = {};
+    $scope.openTransaction = function(ophash) {
+        console.log(ophash);
+        chrome.tabs.create({url: "https://tezex.info/transaction/" + ophash});
+    };
+    var updateHistory = function(address, pending) {
+    	return fetch("https://betaapi.tezex.info/v2/account/" + address + "/transactions/outgoing")
+		.then(r => r.text())
+		.then(r => JSON.parse(r))
+		.then(r => {
+			//console.log(r);
+			let newpending = [];
+			for (let i of pending) {
+				// console.log(i);
+				for (let j of r) {
+					if (i.hash === j.hash) {
+						i.status = "done";
+					}
+				}
+				if (i.status === "pending") {
+					newpending.push(i);
+				}
+			}
+			console.log("updated pending");
+			console.log(newpending);
+			ss.pending = newpending;
+	        Storage.setStore(ss);
+			newpending.push(...r);
+			console.log("complete history");
+			console.log(newpending);
+			return newpending;
+		})
+		.then(h => {
+			return fetch("https://betaapi.tezex.info/v2/account/" + address + "/transactions/incoming")
+			.then(r => r.text())
+			.then(r => JSON.parse(r))
+			.then(r => {
+				h.push(...r);
+				return h;
+			});
+		})
+		.then(h => h.sort((a, b) => {
+    		if (a.time > b.time)
+    			return -1;
+    		else
+    			return 1;
+    	}));
+    };
+    var parseHistory = function(h) {
+    	let parsed = [];
+    	for (let batch of h) {
+    		for (let op of batch.operations) {
+    			if (op.kind === "transaction"){
+    				op = {...op,
+    					hash: batch.hash,
+    					status: (batch.status === "pending" ? "pending" : "done"),
+    					direction: (batch.source === $scope.account.pkh ? ">>" : "<<"),
+                        address: (batch.source === $scope.account.pkh ? op.destination : batch.source)
+    				};
+    				parsed.push(op);
+    			}
+    		}
+    	}
+    	return parsed;
+    };
     $scope.lock = function(){
         ss.temp = {};
         Storage.setStore(ss);
         $location.path('/unlock');
-    }
+    };
     var updateActive = function(){
       ss.account = {
         raw_balance : $scope.accountDetails.raw_balance,
@@ -76,7 +140,7 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
         pk : $scope.account.pk
       }
       Storage.setStore(ss);
-    }
+    };
     $scope.save = function(){
         if (!$scope.account.title){
             alert("Please enter your address title");
@@ -127,7 +191,12 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
             $scope.accountDetails.balance = window.eztz.utility.formatMoney(bal, 6, '.', ',')+"ꜩ";
             var usdbal = bal * 1.78;
             $scope.accountDetails.usd = "$"+window.eztz.utility.formatMoney(usdbal, 6, '.', ',')+"USD";
-            $scope.$apply();
+            updateHistory($scope.account.pkh, ss.pending)
+		    .then(h => parseHistory(h))
+		    .then(h => {
+		    	$scope.history = h;
+		    })
+		    .then(() => $scope.$apply());
             window.hideLoader();
             updateActive();
             window.jdenticon();
@@ -173,7 +242,8 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
             } finally {
                 document.body.removeChild(textarea);
             }
-        }}
+        }
+    };
 }])
 .controller('NewController', ['$scope', '$location', 'Storage', function($scope, $location, Storage) {
     var ss = Storage.loadStore();
@@ -190,7 +260,9 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
     		var identity = {
                 seed : s,
                 accounts : [],
-                secrets : []
+                secrets : [],
+                // pending : [{"branch":"BKiSoEtNHDUdomYhb4GTM7kbjSfSNhpzdtrxzFDLx6ZNZe4ALy7","counter":403,"fee":1,"status":"pending","hash":"oomWvo48JxUxymw7gGkbBDVaPCgXMaYSj9KKFuAh7MYZMxz4pm7","level":28824,"operations":[{"kind":"reveal","public_key":"edpku8vKEfzDSShWqncTEuhhKz63oVRT9ESnjCscjg7YLVbaF6D8fd"},{"amount":"4000000","destination":"tz1KwU6kuhBRtLELH3hFNmXe9o6xZYS171uL","kind":"transaction"}],"source":"tz1d1avKvyYmn2eAw787nw6hbc2F4qyPVaZh","time":"2018-05-07T17:43:00.000Z"},{"branch":"BKiYSB5y3m3E4PBD48xT2RrJHHvmA6QgABZEph3t81jtg5kpDrh","counter":402,"fee":1,"hash":"opCmy9i1mWdNX3s31k4NBB1UE3RfVnejKGPq7FXoxeLEioyjAfD","level":28822,"operations":[{"kind":"reveal","public_key":"edpku8vKEfzDSShWqncTEuhhKz63oVRT9ESnjCscjg7YLVbaF6D8fd"},{"amount":"3000000","destination":"tz1KwU6kuhBRtLELH3hFNmXe9o6xZYS171uL","kind":"transaction"}],"source":"tz1d1avKvyYmn2eAw787nw6hbc2F4qyPVaZh","time":"2018-05-07T17:41:00.000Z"},{"branch":"BKiKj5yFZDoLsABUFKN6dVgeDtEPugLrmyPRxUUY2QPmiR6XkRd","counter":401,"fee":1,"hash":"oo2JBpkDZjWEPJk461HztY7QzcMDKc6RRVhTvQ427yKQDEDo8V6","level":28820,"operations":[{"kind":"reveal","public_key":"edpku8vKEfzDSShWqncTEuhhKz63oVRT9ESnjCscjg7YLVbaF6D8fd"},{"amount":"3000000","destination":"tz1KwU6kuhBRtLELH3hFNmXe9o6xZYS171uL","kind":"transaction"}],"source":"tz1d1avKvyYmn2eAw787nw6hbc2F4qyPVaZh","time":"2018-05-07T17:39:00.000Z"},{"branch":"BKiiZrvfzmUuFMLZhHhJhXCdpZmKrR182c2HDFDGRZ3YfX63RJi","counter":399,"fee":1,"hash":"ooTXgX1pcH5KmmrNKWMPfiZtyouyq5o14cmjzuSS4A9Y6H1dfZn","level":28665,"operations":[{"kind":"reveal","public_key":"edpku8vKEfzDSShWqncTEuhhKz63oVRT9ESnjCscjg7YLVbaF6D8fd"},{"amount":"11000000","destination":"tz1KwU6kuhBRtLELH3hFNmXe9o6xZYS171uL","kind":"transaction"}],"source":"tz1d1avKvyYmn2eAw787nw6hbc2F4qyPVaZh","time":"2018-05-07T15:03:00.000Z"},{"branch":"BKiNBbzzEHkY2W6Myir8xRehqZMPZfn6jdQ99McMTgFSG7FxAZk","counter":398,"fee":50001,"hash":"onyDwdS3RSfD74uqFz4uRSXdDi7qjer1oSMYuEhaWSxwtNZ35hH","level":28656,"operations":[{"kind":"reveal","public_key":"edpku8vKEfzDSShWqncTEuhhKz63oVRT9ESnjCscjg7YLVbaF6D8fd"},{"amount":"13000000","destination":"tz1KwU6kuhBRtLELH3hFNmXe9o6xZYS171uL","kind":"transaction"}],"source":"tz1d1avKvyYmn2eAw787nw6hbc2F4qyPVaZh","time":"2018-05-07T14:54:00.000Z"},{"branch":"BKifZJyyP6T4GKTFmPNiKUfX6TVQocY52r5SjAHAbKDtppGriSV","counter":194,"fee":50001,"hash":"op2Diqe87E5iQNXvPSB9jxUTsc4TtkjoR7x7VPfE6HPFwEqfpUZ","level":5669,"operations":[{"kind":"reveal","public_key":"edpktwgsYACQGqSrKuA4eXbRPj8SS43DAL3VSmjcmV3Cs1bRYy74XN"},{"amount":"100000","destination":"tz1KwU6kuhBRtLELH3hFNmXe9o6xZYS171uL","kind":"transaction"}],"source":"tz1cAp6B3vQwUaAg6m8Z3JKnPjzryWvnvzn2","time":"2018-04-21T11:34:10.000Z"}]
+                pending : []
             };
             identity.accounts.push({
                 title: "Account 1",
@@ -289,6 +361,18 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
         $scope.$apply(function(){
           $scope.sending = false;
           if (typeof r.injectedOperation != 'undefined'){
+          	ss.pending.push({
+          		hash: r.injectedOperation,
+          		status: "pending",
+          		source: $scope.account.pkh,
+          		time: new Date().toISOString(),
+          		operations: [{
+          			destination: $scope.toaddress,
+	          		amount: $scope.amount * 1000000,
+	          		kind: "transaction"
+          		}]          		
+          	});
+            Storage.setStore(ss);
             $location.path('/main');
           } else {
             $scope.sendError = true;
