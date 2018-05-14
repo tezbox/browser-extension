@@ -38,7 +38,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             'transfer' : request.data
           }      
         });
-        chrome.windows.create({'url': chrome.extension.getURL("send.html"), 'type': 'popup','width': 357, 'height': 620,}, function(w) {
+        chrome.windows.create({'url': chrome.extension.getURL("send.html"), 'type': 'popup','width': 357, 'height': 510,}, function(w) {
           chrome.windows.onRemoved.addListener(function l(id) {
             if(id === w.id){
               sendResponse({data: popup_result});
