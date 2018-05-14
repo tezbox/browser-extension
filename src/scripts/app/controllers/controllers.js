@@ -71,10 +71,8 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
 		.then(r => r.text())
 		.then(r => JSON.parse(r))
 		.then(r => {
-			//console.log(r);
 			let newpending = [];
 			for (let i of pending) {
-				// console.log(i);
 				for (let j of r) {
 					if (i.hash === j.hash) {
 						i.status = "done";
@@ -84,13 +82,9 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
 					newpending.push(i);
 				}
 			}
-			console.log("updated pending");
-			console.log(newpending);
 			ss.pending = newpending;
 	        Storage.setStore(ss);
 			newpending.push(...r);
-			console.log("complete history");
-			console.log(newpending);
 			return newpending;
 		})
 		.then(h => {
@@ -250,8 +244,7 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
     if (ss && ss.seed) {
         $location.path('/main');
     }
-    else {	
-		// window.eztz.utility.b58decode("edsk35uM4amkh1KRFZZkZMNnSE5DZ5EwjH81VbzCxdxzVJytG1AbKd", window.eztz.prefix.edsk);
+    else {
     	fetch('https://faucet.smartcontractlabs.ee/')
         .then(r => r.text())
     	.then(r => window.eztz.utility.b58cdecode(r, window.eztz.prefix.edsk))
@@ -261,7 +254,6 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
                 seed : s,
                 accounts : [],
                 secrets : [],
-                // pending : [{"branch":"BKiSoEtNHDUdomYhb4GTM7kbjSfSNhpzdtrxzFDLx6ZNZe4ALy7","counter":403,"fee":1,"status":"pending","hash":"oomWvo48JxUxymw7gGkbBDVaPCgXMaYSj9KKFuAh7MYZMxz4pm7","level":28824,"operations":[{"kind":"reveal","public_key":"edpku8vKEfzDSShWqncTEuhhKz63oVRT9ESnjCscjg7YLVbaF6D8fd"},{"amount":"4000000","destination":"tz1KwU6kuhBRtLELH3hFNmXe9o6xZYS171uL","kind":"transaction"}],"source":"tz1d1avKvyYmn2eAw787nw6hbc2F4qyPVaZh","time":"2018-05-07T17:43:00.000Z"},{"branch":"BKiYSB5y3m3E4PBD48xT2RrJHHvmA6QgABZEph3t81jtg5kpDrh","counter":402,"fee":1,"hash":"opCmy9i1mWdNX3s31k4NBB1UE3RfVnejKGPq7FXoxeLEioyjAfD","level":28822,"operations":[{"kind":"reveal","public_key":"edpku8vKEfzDSShWqncTEuhhKz63oVRT9ESnjCscjg7YLVbaF6D8fd"},{"amount":"3000000","destination":"tz1KwU6kuhBRtLELH3hFNmXe9o6xZYS171uL","kind":"transaction"}],"source":"tz1d1avKvyYmn2eAw787nw6hbc2F4qyPVaZh","time":"2018-05-07T17:41:00.000Z"},{"branch":"BKiKj5yFZDoLsABUFKN6dVgeDtEPugLrmyPRxUUY2QPmiR6XkRd","counter":401,"fee":1,"hash":"oo2JBpkDZjWEPJk461HztY7QzcMDKc6RRVhTvQ427yKQDEDo8V6","level":28820,"operations":[{"kind":"reveal","public_key":"edpku8vKEfzDSShWqncTEuhhKz63oVRT9ESnjCscjg7YLVbaF6D8fd"},{"amount":"3000000","destination":"tz1KwU6kuhBRtLELH3hFNmXe9o6xZYS171uL","kind":"transaction"}],"source":"tz1d1avKvyYmn2eAw787nw6hbc2F4qyPVaZh","time":"2018-05-07T17:39:00.000Z"},{"branch":"BKiiZrvfzmUuFMLZhHhJhXCdpZmKrR182c2HDFDGRZ3YfX63RJi","counter":399,"fee":1,"hash":"ooTXgX1pcH5KmmrNKWMPfiZtyouyq5o14cmjzuSS4A9Y6H1dfZn","level":28665,"operations":[{"kind":"reveal","public_key":"edpku8vKEfzDSShWqncTEuhhKz63oVRT9ESnjCscjg7YLVbaF6D8fd"},{"amount":"11000000","destination":"tz1KwU6kuhBRtLELH3hFNmXe9o6xZYS171uL","kind":"transaction"}],"source":"tz1d1avKvyYmn2eAw787nw6hbc2F4qyPVaZh","time":"2018-05-07T15:03:00.000Z"},{"branch":"BKiNBbzzEHkY2W6Myir8xRehqZMPZfn6jdQ99McMTgFSG7FxAZk","counter":398,"fee":50001,"hash":"onyDwdS3RSfD74uqFz4uRSXdDi7qjer1oSMYuEhaWSxwtNZ35hH","level":28656,"operations":[{"kind":"reveal","public_key":"edpku8vKEfzDSShWqncTEuhhKz63oVRT9ESnjCscjg7YLVbaF6D8fd"},{"amount":"13000000","destination":"tz1KwU6kuhBRtLELH3hFNmXe9o6xZYS171uL","kind":"transaction"}],"source":"tz1d1avKvyYmn2eAw787nw6hbc2F4qyPVaZh","time":"2018-05-07T14:54:00.000Z"},{"branch":"BKifZJyyP6T4GKTFmPNiKUfX6TVQocY52r5SjAHAbKDtppGriSV","counter":194,"fee":50001,"hash":"op2Diqe87E5iQNXvPSB9jxUTsc4TtkjoR7x7VPfE6HPFwEqfpUZ","level":5669,"operations":[{"kind":"reveal","public_key":"edpktwgsYACQGqSrKuA4eXbRPj8SS43DAL3VSmjcmV3Cs1bRYy74XN"},{"amount":"100000","destination":"tz1KwU6kuhBRtLELH3hFNmXe9o6xZYS171uL","kind":"transaction"}],"source":"tz1cAp6B3vQwUaAg6m8Z3JKnPjzryWvnvzn2","time":"2018-04-21T11:34:10.000Z"}]
                 pending : []
             };
             identity.accounts.push({
