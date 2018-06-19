@@ -39,7 +39,7 @@
               </div>
           </div>
           <div class="col-xs-10 col-xs-offset-1">
-            <a ng-click="send()" class="btn btn-success btn-block">Send</a>
+            <a ng-click="send()" ng-disabled=disableSend class="btn btn-success btn-block">{{ (labelSend ? 'Waiting for next block...' : 'Send') }}</a>
             <br />
             <a ng-click="cancel()" class="btn btn-block">Cancel</a>
           </div>

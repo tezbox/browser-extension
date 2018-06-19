@@ -13,6 +13,43 @@ app.controller('SendController', ['$scope', '$location', 'Storage', function($sc
            window.close();
       }
       $scope.account = ss.account;
+
+      //remove when batching is implemented
+      $scope.disableSend = true;
+      $scope.labelSend = false;
+      var recCheckHeadHash = (hash) => {
+        return new Promise(function (resolve, reject) {
+          setTimeout(() => {
+          window.eztz.rpc.getHeadHash()
+          .then(h => {
+            if (h === hash) {
+              $scope.disableSend = true;
+              $scope.labelSend = true;
+              recCheckHeadHash(hash);
+            }
+            else {
+              $scope.disableSend = false;
+              $scope.labelSend = false;
+            }
+          })
+          .then(() => $scope.$apply());
+          }, 1000);
+        });
+      };
+      window.eztz.rpc.getHeadHash()
+      .then(h => {
+        if (h === ss.headHash) {
+          $scope.disableSend = true;
+          $scope.labelSend = true;
+          recCheckHeadHash(ss.headHash);
+        }
+        else {
+          $scope.disableSend = false;
+          $scope.labelSend = false;
+        }
+      })
+      .then(() => $scope.$apply());
+
       $scope.$apply();
     });
     $scope.send = function(){
@@ -62,13 +99,20 @@ app.controller('SendController', ['$scope', '$location', 'Storage', function($sc
             destination: $scope.toaddress,
             amount: $scope.amount * 1000000,
             kind: "transaction"
-          }]              
+          }]
         });
-        Storage.setStore(ss);
+
+        //remove when batching is implemented
+        window.eztz.rpc.getHeadHash()
+        .then(h => {
+          ss.headHash = h;
+          Storage.setStore(ss);
+          window.close();
+        });
       } else {
-        $scope.sendError = true;
+        $scope.sendError = true;        
+        window.close();
       }
-      window.close();  
     }
     $scope.cancel = function(){
       chrome.runtime.sendMessage({ method: "dismissedTransaction", data: "Transaction Canceled!" });

@@ -324,6 +324,44 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
          $location.path('/new');
     }
     $scope.account = window.account;
+
+    //remove when batching is implemented
+    $scope.disableSend = true;
+    $scope.labelSend = false;
+    var recCheckHeadHash = (hash) => {
+        return new Promise(function (resolve, reject) {
+            setTimeout(() => {
+                window.eztz.rpc.getHeadHash()
+                .then(h => {
+                    if (h === hash) {
+                        $scope.disableSend = true;
+                        $scope.labelSend = true;
+                        recCheckHeadHash(hash);
+                    }
+                    else {
+                        $scope.disableSend = false;
+                        $scope.labelSend = false;
+                    }
+                })
+                .then(() => $scope.$apply());
+            }, 1000);
+        });
+    };
+    window.eztz.rpc.getHeadHash()
+    .then(h => {
+        if (h === ss.headHash) {
+            $scope.disableSend = true;
+            $scope.labelSend = true;
+            recCheckHeadHash(ss.headHash);
+        }
+        else {
+            $scope.disableSend = false;
+            $scope.labelSend = false;
+        }
+    })
+    .then(() => $scope.$apply());
+
+    $scope.$apply();
     $scope.send = function(){
         if (!$scope.amount || !$scope.amount) {
           alert("Please enter amount and a destination");
@@ -364,8 +402,13 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
 	          		kind: "transaction"
           		}]          		
           	});
-            Storage.setStore(ss);
-            $location.path('/main');
+            //remove when batching is implemented
+            window.eztz.rpc.getHeadHash()
+            .then(h => {
+              ss.headHash = h;
+              Storage.setStore(ss);
+              $location.path('/main');
+            });
           } else {
             $scope.sendError = true;
           }
