@@ -27,27 +27,34 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
             encryptedMnemonic : sjcl.encrypt($scope.password, $scope.mnemonic),
             accounts : [],
         };
-        //Create free initial 
+
+        //Create free initial
+        $scope.text = "Creating...";
         var keys = window.eztz.crypto.generateKeys(identity.temp.mnemonic, identity.temp.password);
-        window.eztz.rpc.freeAccount(keys).then(function(r){
-          $scope.$apply(function(){
+        window.eztz.rpc.freeDefaultAccount(keys)
+        .then(function(){
             identity.accounts.push({
-              title : 'Account 1',
-              pkh : r
+                title: "Account 1",
+                pkh: keys.pkh,
+                pk: keys.pk
             });
             Storage.setStore(identity);
-            $location.path('/main');
-            $scope.refresh();
-          });
-        }).catch(function(e){
-          window.hideLoader();
-          alert("Error");
-        });;
+            $location.path("/main");
+            $scope.$apply();
+        })
+        .catch(function(e){
+            $scope.$apply(function(){
+                $scope.title = "Error"
+                $scope.text = e + "\nThe Tezos node might be busy. Please try again later.";
+                $scope.password = '';
+                $scope.password2 = '';
+            });
+        });
     };
 }])
 .controller('MainController', ['$scope', '$location', '$http', 'Storage', function($scope, $location, $http, Storage) {
     var ss = Storage.loadStore();
-    if (!ss || !ss.encryptedMnemonic){
+    if (!ss || !ss.seed){
       //not set or not unlocked
          $location.path('/new');
     }
@@ -55,19 +62,79 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
     $scope.accounts = ss.accounts;
     $scope.account = ss.accounts[0];
     $scope.accountDetails = {};
+    $scope.openTransaction = function(ophash) {
+        console.log(ophash);
+        chrome.tabs.create({url: "https://tezex.info/transaction/" + ophash});
+    };
+    var updateHistory = function(address, pending) {
+    	return fetch("https://betaapi.tezex.info/v2/account/" + address + "/transactions/outgoing")
+		.then(r => r.text())
+		.then(r => JSON.parse(r))
+		.then(r => {
+			let newpending = [];
+			for (let i of pending) {
+				for (let j of r) {
+					if (i.hash === j.hash) {
+						i.status = "done";
+					}
+				}
+				if (i.status === "pending") {
+					newpending.push(i);
+				}
+			}
+			ss.pending = newpending;
+	        Storage.setStore(ss);
+			newpending.push(...r);
+			return newpending;
+		})
+		.then(h => {
+			return fetch("https://betaapi.tezex.info/v2/account/" + address + "/transactions/incoming")
+			.then(r => r.text())
+			.then(r => JSON.parse(r))
+			.then(r => {
+				h.push(...r);
+				return h;
+			});
+		})
+		.then(h => h.sort((a, b) => {
+    		if (a.time > b.time)
+    			return -1;
+    		else
+    			return 1;
+    	}));
+    };
+    var parseHistory = function(h) {
+    	let parsed = [];
+    	for (let batch of h) {
+    		for (let op of batch.operations) {
+    			if (op.kind === "transaction"){
+    				op = {...op,
+    					hash: batch.hash,
+    					status: (batch.status === "pending" ? "pending" : "done"),
+    					direction: (batch.source === $scope.account.pkh ? ">>" : "<<"),
+                        address: (batch.source === $scope.account.pkh ? op.destination : batch.source)
+    				};
+    				parsed.push(op);
+    			}
+    		}
+    	}
+    	return parsed;
+    };
     $scope.lock = function(){
         ss.temp = {};
         Storage.setStore(ss);
         $location.path('/unlock');
-    }
+    };
     var updateActive = function(){
       ss.account = {
+        raw_balance : $scope.accountDetails.raw_balance,
         balance : $scope.accountDetails.balance,
         title : $scope.account.title,
         tz1 : $scope.account.pkh,
+        pk : $scope.account.pk
       }
       Storage.setStore(ss);
-    }
+    };
     $scope.save = function(){
         if (!$scope.account.title){
             alert("Please enter your address title");
@@ -104,35 +171,30 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
         });
       });
     };
-    var formatMoney = function(n, c, d, t){
-      var c = isNaN(c = Math.abs(c)) ? 2 : c, 
-        d = d == undefined ? "." : d, 
-        t = t == undefined ? "," : t, 
-        s = n < 0 ? "-" : "", 
-        i = String(parseInt(n = Math.abs(Number(n) || 0).toFixed(c))), 
-        j = (j = i.length) > 3 ? j % 3 : 0;
-       return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
-     };
     $scope.loadAccount = function(a){
         $scope.account = a;
         $scope.accountDetails = {
             balance : "Loading...",
             usd : "Loading...",
         };
-        window.showLoader();
-        window.eztz.rpc.getBalance(a.pkh).then(function(r){
-            var bal = window.eztz.utility.mintotz(r);
-            $scope.accountDetails.balance = formatMoney(bal, 2, '.', ',')+"ꜩ";
+        window.eztz.rpc.getBalance(a.pkh)
+        .then(function(r){
+            var rb = parseInt(r);
+            $scope.accountDetails.raw_balance = rb;
+            var bal = window.eztz.utility.mintotz(rb); 
+            $scope.accountDetails.balance = window.eztz.utility.formatMoney(bal, 6, '.', ',')+"ꜩ";
             var usdbal = bal * 1.78;
-            $scope.accountDetails.usd = "$"+formatMoney(usdbal, 2, '.', ',')+"USD";
+            $scope.accountDetails.usd = "$"+window.eztz.utility.formatMoney(usdbal, 6, '.', ',')+"USD";
+            updateHistory($scope.account.pkh, ss.pending)
+		    .then(h => parseHistory(h))
+		    .then(h => {
+		    	$scope.history = h;
+		    })
+		    .then(() => $scope.$apply());
             window.hideLoader();
-            $scope.$apply(function(){});
             updateActive();
+            window.jdenticon();
         });
-        updateActive();
-        setTimeout(function(){
-        window.jdenticon();
-        }, 100);
     }
     $scope.refresh = function(){
         $scope.loadAccount($scope.account);
@@ -174,22 +236,37 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
             } finally {
                 document.body.removeChild(textarea);
             }
-        }}
+        }
+    };
 }])
 .controller('NewController', ['$scope', '$location', 'Storage', function($scope, $location, Storage) {
     var ss = Storage.loadStore();
-    if (ss && typeof ss.temp != 'undefined' && ss.temp.mnemonic && ss.temp.password){
+    if (ss && ss.seed) {
         $location.path('/main');
-    }  else if (ss && ss.encryptedMnemonic){
-        $location.path('/unlock');
     }
-    $scope.restore = function(){
-        $location.path('/restore');
-    };
-    $scope.create = function(){
-        $location.path('/create');
-    };
-    
+    else {
+    	fetch('https://faucet.smartcontractlabs.ee/')
+        .then(r => r.text())
+    	.then(r => window.eztz.utility.b58cdecode(r, window.eztz.prefix.edsk))
+    	.then(function (s) {
+    		var kp = window.eztz.library.sodium.crypto_sign_seed_keypair(s);
+    		var identity = {
+                seed : s,
+                accounts : [],
+                secrets : [],
+                pending : []
+            };
+            identity.accounts.push({
+                title: "Account 1",
+		        pk: window.eztz.utility.b58cencode(kp.publicKey, window.eztz.prefix.edpk),
+		        pkh: window.eztz.utility.b58cencode(window.eztz.library.sodium.crypto_generichash(20, kp.publicKey), window.eztz.prefix.tz1)
+            });
+            identity.secrets.push(window.eztz.utility.b58cencode(kp.privateKey, window.eztz.prefix.edsk));
+            Storage.setStore(identity);
+            $location.path("/main");
+            $scope.$apply();
+    	})
+    }
 }])
 .controller('UnlockController', ['$scope', '$location', 'Storage', function($scope, $location, Storage) {
     var ss = Storage.loadStore();
@@ -243,20 +320,61 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
     $scope.sendError = false;
     $scope.amount = 0;
     var ss = Storage.loadStore();
-    if (!ss || !ss.encryptedMnemonic){
+    if (!ss || !ss.seed){
          $location.path('/new');
     }
     $scope.account = window.account;
+
+    //remove when batching is implemented
+    $scope.disableSend = true;
+    $scope.labelSend = false;
+    var recCheckHeadHash = (hash) => {
+        return new Promise(function (resolve, reject) {
+            setTimeout(() => {
+                window.eztz.rpc.getHeadHash()
+                .then(h => {
+                    if (h === hash) {
+                        $scope.disableSend = true;
+                        $scope.labelSend = true;
+                        recCheckHeadHash(hash);
+                    }
+                    else {
+                        $scope.disableSend = false;
+                        $scope.labelSend = false;
+                    }
+                })
+                .then(() => $scope.$apply());
+            }, 1000);
+        });
+    };
+    window.eztz.rpc.getHeadHash()
+    .then(h => {
+        if (h === ss.headHash) {
+            $scope.disableSend = true;
+            $scope.labelSend = true;
+            recCheckHeadHash(ss.headHash);
+        }
+        else {
+            $scope.disableSend = false;
+            $scope.labelSend = false;
+        }
+    })
+    .then(() => $scope.$apply());
+
+    $scope.$apply();
     $scope.send = function(){
         if (!$scope.amount || !$scope.amount) {
           alert("Please enter amount and a destination");
           return;
         }
-        var keys = window.eztz.crypto.generateKeys(ss.temp.mnemonic, ss.temp.password);
+        var keys = {};
+        keys.pk = $scope.account.pk
         keys.pkh = $scope.account.pkh;
+        //breaks multiple accounts
+        keys.sk = ss.secrets[0];
         $scope.sendError = false;
         $scope.sending = true;
-        var am = $scope.amount * 100;
+        var am = $scope.amount * 1000000;
         am = am.toFixed(0);
         
         var operation = {
@@ -273,7 +391,24 @@ app.controller('CreateController', ['$scope', '$location', 'Storage', function($
         $scope.$apply(function(){
           $scope.sending = false;
           if (typeof r.injectedOperation != 'undefined'){
-            $location.path('/main');
+          	ss.pending.push({
+          		hash: r.injectedOperation,
+          		status: "pending",
+          		source: $scope.account.pkh,
+          		time: new Date().toISOString(),
+          		operations: [{
+          			destination: $scope.toaddress,
+	          		amount: $scope.amount * 1000000,
+	          		kind: "transaction"
+          		}]          		
+          	});
+            //remove when batching is implemented
+            window.eztz.rpc.getHeadHash()
+            .then(h => {
+              ss.headHash = h;
+              Storage.setStore(ss);
+              $location.path('/main');
+            });
           } else {
             $scope.sendError = true;
           }
