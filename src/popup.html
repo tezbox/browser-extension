@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/angular-csp.css">
         <link rel="stylesheet" href="css/popup.css">
-        <link rel="stylesheet" href="css/font-awesome.min.css">
+        <link rel="stylesheet" href="css/fontawesome-all.min.css">
 				<link href="https://fonts.googleapis.com/css?family=Arimo" rel="stylesheet">
     <!-- endbuild -->
     <base href="/">
@@ -15,13 +15,14 @@
   </head>
 
   <body>
-    <div ng-view></div>
+    <div id="area" ng-view></div>
     <div class="poweredby">
     &copy; 2017 <a target="_blank" href="http://tezbox.github.io">TezBox</a> - Developed by Stephen Andrews<br />
         Donate Bitcoin -  <a target="_blank" href="bitcoin:1KSiyfgs5XwTZjaLpmCTHxonsyXMx383P1">1KSiyfgs5XwTZjaLpmCTHxonsyXMx383P1</a>
     </div>
     <!-- build:js popup.js -->
-    <script src="js/eztz.min.js"></script>
+    <script src="js/popup.js"></script>
+    <script src="js/eztz.js"></script>
     <script src="js/sjcl.js"></script>
     <script src="js/jdenticon.js"></script>
     <script src="js/jquery/jquery.min.js"></script>
@@ -35,5 +36,9 @@
     <script src="scripts/app/services/storage.js"></script>
     <script src="scripts/app/controllers/controllers.js"></script>
     <!-- endbuild -->
+    <div id="loadingSpinnerContainer">
+    <div class="bg"></div>
+    <div id="loading-bar-spinner" class="spinner"><div class="spinner-icon"></div></div>
+    </div>
   </body>
 </html>
