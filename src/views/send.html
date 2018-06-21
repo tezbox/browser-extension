@@ -1,12 +1,6 @@
-<div>
-    <div class="row mainHeaderBox">
-        <div class="col-xs-6">
-            <span class="logo"><img class="logoSmall" src="images/logo.jpg" /> TEZBOX</span>
-        </div>
-    </div>
-
-
-    <div class="row text-center">
+<div class="text-center">
+    <h1>Send Tez</h1>
+    <div class="row">
         <div ng-show="sending" class="text-align:center;">
         
           <strong>Sending, please wait</strong>
@@ -18,30 +12,19 @@
                 <input type="text" class="text-center form-control" ng-model="toaddress" >
               </div>
               
-          </div>
-          <div class="col-xs-5 col-xs-offset-1">
               <div class="form-group">
-                <label for="exampleInputEmail1">Amount</label>
+                <label for="exampleInputEmail1">Amount to Send</label>
                 <input type="text" class="text-center form-control" ng-model="amount" >
               </div>
-          </div>
-          <div class="col-xs-5">
-              <div class="form-group">
-                <label for="exampleInputEmail1">Fee</label>
-                <input type="text" class="text-center form-control" ng-model="fee" >
-              </div>
-          </div>
               
-          <div class="col-xs-10 col-xs-offset-1">
               <div class="form-group">
-                <label for="exampleInputEmail1">Parameters</label>
-                <input type="text" class="text-center form-control" placeholder="(optional)"ng-model="parameters" >
+                <label for="exampleInputEmail1">Parameters (optional)</label>
+                <input type="text" class="text-center form-control" ng-model="parameters" >
               </div>
           </div>
           <div class="col-xs-10 col-xs-offset-1">
-            <a ng-click="send()" class="btn btn-success btn-block">Send</a>
-            <br />
-            <a ng-click="cancel()" class="btn-link">Cancel</a>
+            <a ng-click="cancel()" class="btn btn-danger">Cancel</a>
+            <a ng-click="send()" class="btn btn-primary">Send</a>
           </div>
         </div>
     </div>
