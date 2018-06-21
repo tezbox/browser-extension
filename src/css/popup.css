@@ -67,16 +67,24 @@ h1{
 .addressDetails{
 
 }
+.addressDetails h5.address>a{
+    display: inline-block;
+    overflow: hidden;
+}
+.addressDetails h5.address>span{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 130px;
+    display: inline-block;
+}
 .addressDetails h5.address{
     line-height:2em!important;
     font-size:.9em!important;
     color:#aaa;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
 }
 .addressDetails h5{
-    line-height:2em!important;
+    line-height:1em!important;
     font-size:1.6em!important;
     font-weight:bold;
     color:#0AC474;

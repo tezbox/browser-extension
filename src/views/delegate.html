@@ -1,29 +1,41 @@
 <div class="text-center">
     <h1>Set Delegation</h1>
     <div class="row">
-        <div ng-show="sending" class="text-align:center;">
-        
-          <strong>Saving, please wait</strong>
+        <div ng-show="!delegatable" class="text-align:center;">
+          <div class="col-xs-10 col-xs-offset-1">
+            <strong>This address can not be delegated - you will need to create a new account, transfer your tez, and delegate that account.</strong>
+          </div>
+          <div class="col-xs-10 col-xs-offset-1">
+              <a ng-click="cancel()" class="btn btn-danger">Cancel</a>
+          </div>
         </div>
-        <div ng-hide="sending">
-        <div class="col-xs-10 col-xs-offset-1">
-            <div class="form-group">
-              <label for="exampleInputEmail1">Delegate</label>
-              <select class="text-center form-control" ng-model="delegateType">
-                <option value="">Custom</option>
-                <option value="tz1TwYbKYYJxw7AyubY4A9BUm2BMCPq7moaC">Tezzigator</option>
-                <option value="tz1UsgSSdRwwhYrqq7iVp2jMbYvNsGbWTozp">MyCryptoDelegate</option>
-              </select>
+        <div ng-show="delegatable">
+          <div ng-show="sending" class="text-align:center;">
+            <strong>Saving, please wait</strong>
+          </div>
+          <div ng-show="sendError != ''" class="text-align:center;">
+            <strong>{{sendError}}</strong>
+          </div>
+          <div ng-hide="sending">
+            <div class="col-xs-10 col-xs-offset-1">
+                <div class="form-group">
+                  <label for="exampleInputEmail1">Delegate</label>
+                  <select class="text-center form-control" ng-model="delegateType">
+                    <option value="">Custom</option>
+                    <option value="tz1TwYbKYYJxw7AyubY4A9BUm2BMCPq7moaC">Tezzigator</option>
+                    <option value="tz1UsgSSdRwwhYrqq7iVp2jMbYvNsGbWTozp">MyCryptoDelegate</option>
+                  </select>
+                </div>
+                <div class="form-group" ng-show="!delegateType">
+                  <label for="exampleInputEmail1">Address</label>
+                  <input type="text" class="text-center form-control" ng-model="delegate" >
+                </div>
             </div>
-            <div class="form-group" ng-show="!delegateType">
-              <label for="exampleInputEmail1">Address</label>
-              <input type="text" class="text-center form-control" ng-model="delegate" >
+            <div class="col-xs-10 col-xs-offset-1">
+              <a ng-click="cancel()" class="btn btn-danger">Cancel</a>
+              <a ng-click="save()" class="btn btn-primary">Save</a>
             </div>
-        </div>
-        <div class="col-xs-10 col-xs-offset-1">
-          <a ng-click="cancel()" class="btn btn-danger">Cancel</a>
-          <a ng-click="save()" class="btn btn-primary">Save</a>
-        </div>
+          </div>
         </div>
     </div>
 </div>
