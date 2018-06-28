@@ -8,15 +8,12 @@
 
     <div class="row text-center">
         <div class="col-xs-12">
-            <p class="alert alert-danger"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Please write your seed words below and store them in a secure place. These can be used to restore your wallet.</strong></p>
+            <p class="alert alert-danger"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Please write your seed words below down and store them in a secure place. These can be used to restore your wallet (alongside the optional passphrase).</strong></p>
         </div>
         <div class="col-xs-10 col-xs-offset-1">
             <p class="mnemonic">{{mnemonic}}</p>
             <div class="form-group">
-                <input type="password" class="text-center form-control" ng-model="password" placeholder="New Password">
-            </div>
-            <div class="form-group">
-                <input type="password" class="text-center form-control" ng-model="password2" placeholder="Repeat Password">
+                <input type="password" class="text-center form-control" ng-model="passphrase" placeholder="Optional Passphrase">
             </div>
         </div>
         <div class="col-xs-10 col-xs-offset-1">

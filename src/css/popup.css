@@ -6,6 +6,7 @@
   left: 0;
   right: 0;
   display:none;
+      z-index: 300;
 }
 #loadingSpinnerContainer .bg{
   background-color:#000;
@@ -22,7 +23,7 @@
     top: 50%;
     margin-top: -20px;
     position: absolute;
-    z-index: 19 !important;
+    z-index: 200 !important;
     animation: loading-bar-spinner 400ms linear infinite;
 }
 
@@ -91,10 +92,17 @@ a.btn-link{
     text-align:left;
 }
 #area div.mainHeaderBox{
-  text-align: left;
-  margin-top:0;
-  font-size:.9rem;
-  margin-bottom: 10px;
+    text-align: left;
+    margin-top: 0;
+    font-size: .9rem;
+    margin-bottom: 10px;
+    position: fixed;
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    top: 0;
+    background: white;
+    z-index: 100;
 }
 #area div.mainHeaderBox img.logoSmall{
   height: 32px;
@@ -133,13 +141,17 @@ h3.header{
 html {
   background: #ffffff;
   height: 500px!important;
-  padding: 10px;
   overflow: hidden;
+  overflow-y: scroll;
   box-sizing: border-box;
   width: 357px!important;
 }
 body{
 	font-family: 'Arimo', sans-serif!important;
+      overflow: hidden;
+    padding:10px;
+    padding-bottom: 30px;
+    padding-top: 60px;
 }
 .btn{
     text-transform:uppercase;
@@ -246,4 +258,77 @@ h1{
     bottom:5px;
         bottom: 5px;
     width: 100%;
+}
+.tabChoices a {
+  font-weight: bold;
+  font-size: 12px;
+  text-transform:uppercase;
+  margin-bottom: 10px;
+  text-align: center;
+  color: #DF385D;
+  cursor: pointer;
+}
+
+.transactions {
+  
+}
+.transactions .tx {
+  position: relative;
+    border-bottom: 1px solid #B9013B;
+    padding: 10px;
+    padding-left: 40px;
+    text-align: center;
+    padding-right: 60px;
+}
+.transactions .tx canvas{
+ border-radius: 50%;
+    width: 32px;
+    position: absolute;
+    left: 0;
+}
+.transactions .tx h3.date{
+      margin: 0;
+    font-size: 15px;
+    font-weight:bold;
+    color:#555;
+ 
+}
+.transactions .tx span.opHash{
+}
+.transactions .tx span.amt{
+      position: absolute;
+    right: 0;
+    font-size: 15px;
+    font-weight: bold;
+    color:#B9013B;
+     top: 10px;
+}
+.accountOffline{
+position: absolute;
+    top: 5px;
+    right: -20px;
+    font-size: 23px;
+    color: #C53929;
+}
+.tabChoices{
+  margin: 10px;
+    margin-top: 0;
+    text-align: center;
+}
+.tabChoices a:hover{
+  text-decoration:none;
+}
+.tabChoices a{
+      font-weight: bold;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    text-align: center;
+    color: #DF385D;
+    cursor: pointer;
+    padding: 10px;
+    display: block;
+}
+.tabChoices .selected{
+      background: #f0f0f0;
 }

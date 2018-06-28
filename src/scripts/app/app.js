@@ -2,11 +2,12 @@
 
 // Declare app level module which depends on filters, and services
 var app = angular.module('popup', [
-  'ngRoute'
+  'ngRoute',
+  'angular-blockies',
+  'monospaced.qrcode',
 ])
 
 app.config(function($routeProvider) {
-    console.log($routeProvider);
     $routeProvider
     .when("/create", {
         templateUrl : chrome.extension.getURL("views/create.html"),
@@ -39,6 +40,10 @@ app.config(function($routeProvider) {
     .when("/qr", {
         templateUrl : chrome.extension.getURL("views/qr.html"),
         controller : "QrController",
+    })
+    .when("/encrypt", {
+        templateUrl : chrome.extension.getURL("views/encrypt.html"),
+        controller : "EncryptController",
     })
     .otherwise({
         redirectTo: '/new'

@@ -8,8 +8,8 @@
 
     <div class="row text-center">
           <div class="col-xs-10 col-xs-offset-1">
-            <img style="min-height:200px; margin:20px;" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{account.pkh}}" /<br />
-            <p class="address">{{account.pkh}}</p>
+          <qrcode error-correction-level="H" size="200" data="{{account.address}}" color="#FFF" background="#000"></qrcode>
+            <p class="address">{{account.address}}</p>
           </div>
           <div class="col-xs-10 col-xs-offset-1">
             <a ng-click="copy()" class="btn btn-success btn-block">Copy Address</a>

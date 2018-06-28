@@ -1,20 +1,19 @@
 var default_message = "Transaction Canceled!";
 var popup_result = default_message;
-// default response, used when popup is closed by clicking X button (listener does not fire)
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     var tb = JSON.parse(localStorage.getItem('tbstore'));
     if (!tb) {
       sendResponse({data: "unavailable"});
     } else if (request.method == "status"){
-      if (typeof tb.temp.mnemonic == 'undefined') {
+      if (typeof tb.sk == 'undefined') {
         sendResponse({data: "locked"});
       } else {
-        sendResponse({data: localStorage.getItem("counter")});
+        sendResponse({data: "available"});
       }
     } else if (request.method == "getActiveAccount"){
-      eztz.rpc.getBalance(tb.account.tz1)
+      eztz.rpc.getBalance(tb.currentAccount.address)
       .then((r) => {
-        balance = eztz.utility.formatMoney(r/100, 2, '.', ',')+"ꜩ";
+        balance = eztz.utility.formatMoney(r, 2, '.', ',')+"ꜩ";
         tb.account.balance = balance;
         tb.account.raw_balance = r;
         localStorage.setItem("tbstore", JSON.stringify(tb));
@@ -28,7 +27,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     } else if (request.method === "dismissedTransaction") {
       popup_result = request.data
     } else if (request.method == "initiateTransaction"){
-      if (typeof tb.temp.mnemonic == 'undefined') {
+      if (typeof tb.temp == 'undefined') {
         sendResponse({data: tb.accounts});
       } else {
         chrome.storage.local.set({ 
