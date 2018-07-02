@@ -1,0 +1,25 @@
+<div>
+    <div class="row mainHeaderBox">
+        <div class="col-xs-6">
+            <span class="logo"><img class="logoSmall" src="skin/images/logo.png" /> TEZBOX</span>
+        </div>
+    </div>
+
+
+    <div class="row text-center">
+        <div class="col-xs-12">
+             <p class="alert alert-danger"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Please write your seed words below and store them in a secure place. These can be used to restore your wallet.</strong></p>
+        </div>
+        <div class="col-xs-10 col-xs-offset-1">
+            <p class="mnemonic">{{mnemonic}}</p>
+            <div class="form-group">
+                <input autocomplete="off" type="password" class="text-center form-control" ng-model="passphrase" placeholder="Optional Passphrase">
+            </div>
+        </div>
+        <div class="col-xs-10 col-xs-offset-1">
+            <a ng-click="create()" class="btn btn-success btn-block">Create TezBox</a>
+            <br />
+          <a ng-click="cancel()" class="btn-link">Cancel</a>
+        </div>
+    </div>
+</div>

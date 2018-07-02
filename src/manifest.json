@@ -1,22 +1,27 @@
 {
-    "name": "TezBox",
-    "version": "4.0.0",
+    "name": "TezBox - Tezos Wallet",
+    "short_name": "TezBox",
+    "version": "6.0.0",
     "manifest_version": 2,
-    "description": "Secure Tezos Wallet for Chrome",
+    "author": "https://tezbox.github.io",
+    "description": "Secure Tezos Wallet from your browser",
     "icons": {
-        "16": "images/icon-16.png",
-        "128": "images/icon-128.png"
+        "16": "skin/images/icon-16.png",
+        "128": "skin/images/icon-128.png"
     },
     "default_locale": "en",
     "background": {
-        "page": "background.html"
+      "scripts": [
+        "background.js"
+      ],
+      "persistent": true
     },
     "browser_action": {
         "default_icon": {
-            "19": "images/icon-19.png",
-            "38": "images/icon-38.png"
+            "19": "skin/images/icon-19.png",
+            "38": "skin/images/icon-38.png"
         },
-        "default_title": "TezBox Wallet",
+        "default_title": "TezBox",
         "default_popup": "popup.html"
     },
     "externally_connectable": {
@@ -26,19 +31,14 @@
     "permissions": [
         "http://*/*",
         "https://*/*",
-        "contextMenus",
         "storage",
-        "notifications",
-        "clipboardRead",
+        "unlimitedStorage",
         "clipboardWrite",
-        "tabs",
         "<all_urls>"
     ],
-    "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
     "web_accessible_resources": [
         "http://fonts.googleapis.com/",
-        "https://*.google-analytics.com/**/*",
-        "scripts/inject.js"
+        "inject.js"
     ],
     "content_scripts": [
         {
@@ -46,12 +46,8 @@
                 "http://*/*",
                 "https://*/*"
             ],
-            "exclude_matches": [
-            ],
-            "css": [
-            ],
             "js": [
-                "scripts/contentscript.js"
+                "contentscript.js"
             ],
             "run_at": "document_end",
             "all_frames": false

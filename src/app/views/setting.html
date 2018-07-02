@@ -1,0 +1,26 @@
+<div>
+    <div class="row mainHeaderBox">
+        <div class="col-xs-6">
+            <span class="logo"><img class="logoSmall" src="skin/images/logo.png" /> TEZBOX</span>
+        </div>
+    </div>
+    
+      <div class="row text-center">
+        <div class="col-xs-12">
+              <p class="alert alert-info"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Please be careful with changing these settings.</strong></p>
+          </div>
+      </div>
+      <div class="col-xs-12">
+          <div class="form-group">
+              <label class="text-center">RPC Address</label>
+              <p>When running your own node, you can use your IP/domain here to connect to it by default. This needs to be available via SSL (HTTPS) to work with this wallet.</p>
+              <input type="text" class="text-center form-control" ng-model="setting.rpc">
+          </div>
+      </div>
+      <div class="row text-center">
+          <div class="col-xs-6 col-xs-offset-3">
+              <a ng-click="save()" class="btn btn-success btn-block">Save</a>
+          </div>
+      </div>
+      
+</div>

@@ -1,0 +1,94 @@
+<div>
+    <div class="row mainHeaderBox">
+        <div class="col-xs-6">
+            <span class="logo"><img class="logoSmall" src="skin/images/logo.png" /> TEZBOX</span>
+        </div>
+        <div class="col-xs-6 text-right">
+            <a ng-click="viewSettings()" class="btn btn-icon btn-default"><i class="fa fa-cog" aria-hidden="true"></i></a> 
+            <a ng-click="lock()" class="btn btn-icon btn-default"><i class="fa fa-lock" aria-hidden="true"></i></a>
+        </div>
+    </div>
+    <div class="row addressDetails">
+        <div class="col-xs-12">
+            <h1 class="walletTitle" ng-show="!editMode">
+              <div class="dropdown left">
+								<button class="icon-button" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+									<i class="fa fa-angle-down" aria-hidden="true"></i>
+								</button>
+								<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+									<li ng-repeat="a in accounts track by a.address"><a ng-click="loadAccount($index)">{{a.title}}</a></li>
+									<li role="separator" class="divider"></li>
+									<li><a ng-click="add()">Add Account</a></li>
+								</ul>
+							</div>
+              {{accounts[account].title}}
+							<div class="dropdown right">
+								<button class="icon-button" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+									<i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+								</button>
+								<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+									<li><a ng-click="editMode = true;">Edit Title</a></li>
+									<li><a ng-click="delegate()">Manage Delegate</a></li>
+									<li><a href="http://tzscan.io/{{accounts[account].address}}" target="_blank">View on TZScan</a></li>
+									<li ng-show="account > 0"><a ng-click="remove()">Remove Account</a></li>
+								</ul>
+							</div>
+						</h1>
+            <div ng-show="editMode" style="    margin-top: 14px;" class="input-group">
+              <input type="text" class="form-control" ng-model="accounts[account].title">
+              <span class="input-group-btn">
+                <a ng-click="save()" class="btn btn-success btn-inner">Save</a>
+              </span>
+            </div>
+        </div>
+    </div>
+    <div class="row addressDetails text-center" style="margin-top:10px;">
+        <div class="col-xs-3 blockatar">
+          <blocky class="avatar" seed='{{accounts[account].address}}' size='8' scale='16'></blocky>
+          <div class="accountOffline" ng-hide="accountLive"><i class="leftIcon fas fa-exclamation-circle"></i></div>
+        </div>
+        <div class="col-xs-9">
+            <h5 class="address">
+            <button ng-click="copy()" class="icon-button" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+									<i class="far fa-copy" aria-hidden="true"></i>
+								</button>
+                {{accounts[account].address}}
+                </h5>
+            <h5 class="balance">{{accountDetails.balance}} <button ng-click="refresh()" class="icon-button" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+									<i class="fas fa-sync" aria-hidden="true"></i>
+								</button>
+                </h5>
+        </div>
+    </div>
+    <div class="row" ng-hide="accountLive">
+        <div class="col-md-10 col-md-offset-1">
+                  <p class="alert alert-danger"><i class="leftIcon fas fa-exclamation-circle"></i><strong>This account has not be added to the blockchain yet - please wait for a baker to include this in a block before using this account.</strong></p>
+    </div>
+    </div>
+    <div ng-show="accountLive">
+    <div class="row" style="margin-top:10px;">
+        <div class="col-xs-3 col-xs-offset-3" style="padding:2px;">
+          <a ng-click="send()" class="btn btn-success btn-small btn-block">Send</a>
+        </div>
+        <div class="col-xs-3" style="padding:2px;">
+          <a ng-click="qr()" class="btn btn-success btn-small btn-block">Receive</a>
+        </div>
+    </div>
+    <div class="row text-center" style="margin-top:10px;">
+        <div class="col-xs-12 text-center">
+        <h1 class="walletTitle"><i class="fas fa-exchange-alt"></i> Transactions
+        </h1>
+        <strong ng-hide="transactions.length >0">No transactions available</strong>
+        </div>
+    </div>
+    <div class="transactions" ng-hide="transactions.length == 0">
+      <div class='tx' ng-repeat="tx in transactions track by $index">
+            <blocky class="avatar" seed='{{tx.to}}' size='8' scale='16'></blocky>
+            <h3 class="date">{{tx.date}}</h3>
+            <span class="opHash"><a href="{{'http://tzscan.io/' + tx.hash}}" ng-click="openTransaction(tx.hash)">{{tx.hash.slice(0,11)}}..</a></span>
+            <span class="amt">{{tx.amount.toFixed(2)}}ꜩ</span>
+      </div>
+  </div>
+  </div>
+</div>
+<style>.blockatar canvas{width:80px;border-radius: 50%;}</style>
