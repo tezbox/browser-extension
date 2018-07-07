@@ -8,10 +8,13 @@
 
     <div class="row text-center">
         <div ng-show="account == 0" class="col-xs-12">
-                  <p class="alert alert-danger"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Delegation from this address is not allowed (lowercase tz addresses) - these are referred to as implicit addresses and the protocol doesn't allow them to delegate to another key. Please create an account (KT address) to use for delegation.</strong></p>
+            <p class="alert alert-danger"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Delegation from this address is not allowed (lowercase tz addresses) - these are referred to as implicit addresses and the protocol doesn't allow them to delegate to another key. Please create an account (KT address) to use for delegation.</strong></p>
         </div>
-        <div ng-show="account > 0 && delegateType == ''"" class="col-xs-12">
-                  <p class="alert alert-danger"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Please ensure the delegate you are entering has been registered to participate in the baking protocol.</strong></p>
+        <div ng-show="account > 0 && delegateType == ''" class="col-xs-12">
+            <p class="alert alert-danger"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Please ensure the delegate you are entering has been registered to participate in the baking protocol.</strong></p>
+        </div>
+        <div ng-show="account > 0 && delegateType != ''" class="col-xs-12">
+            <p class="alert alert-warning"><i class="leftIcon fas fa-exclamation-circle"></i><strong>TezBox doesn't endorse any of the listed delegation services listed below - please ensure you are doing your own research into each one.</strong></p>
         </div>
         <div ng-show="account > 0 && sending" class="text-align:center;">
           <strong>Saving, please wait</strong>

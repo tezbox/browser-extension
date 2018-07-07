@@ -1,13 +1,21 @@
 app.service('Storage', function() {
+    
     var r = {};
-    r.setStore = function(v){
+    
+    r.keys = {};
+    r.password = '';
+    r.restored = false;
+    r.ico = false;
+    r.setStore = function(v, k, p){
         localStorage.setItem('tbstore', JSON.stringify(v));
+        if (typeof k != 'undefined') r.keys = k;
     };
     r.loadStore = function(){
         return JSON.parse(localStorage.getItem('tbstore'));
     };
     r.clearStore = function(){
-        localStorage.clear();
+      r.keys = {};
+      localStorage.clear();
     };
     r.setSetting = function(v){
         localStorage.setItem('tbsetting', JSON.stringify(v));

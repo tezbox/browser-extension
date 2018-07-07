@@ -18,7 +18,7 @@
     </div>
     <div ng-show="type == 'seed'" class="row text-center">
       <div class="col-xs-12">
-            <p class="alert alert-info"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Please enter your seed and passphrase below and we will atempt to restore your wallet.</strong></p>
+            <p class="alert alert-info"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Please enter your seed and passphrase below and we will attempt to restore your wallet. If you are trying to restore your Fundraiser/ICO wallet please select the 'ICO Wallet' tab instead (even if you have restored it previously)</strong></p>
         </div>
         <div class="col-xs-10 col-xs-offset-1">
             <div class="form-group">
@@ -36,7 +36,7 @@
     </div>
     <div ng-show="type == 'private'" class="row text-center">
       <div class="col-xs-12">
-            <p class="alert alert-info"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Please enter your private key and we will atempt to restore your wallet.</strong></p>
+            <p class="alert alert-info"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Please enter your private key and we will attempt to restore your wallet. This option is for those users who have exported an unencrypted private key from the Tezos client (or have generated one elsewhere). Currently we only accept the "edsk..." variant.</strong></p>
         </div>
         <div class="col-xs-10 col-xs-offset-1">
             <div class="form-group">
@@ -51,17 +51,20 @@
     </div>
     <div ng-show="type == 'ico'" class="row text-center">
       <div class="col-xs-12">
-            <p class="alert alert-info"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Please enter your seed, email address, password and we will atempt to restore your wallet. Activation code is optional.</strong></p>
+            <p class="alert alert-info"><i class="leftIcon fas fa-exclamation-circle"></i><strong>If you have a fundraiser wallet, you must use this option everytime to restore your wallet. Please enter your seed, email address, password and address/public key hash from the fundraiser PDF and we will attempt to restore your wallet. If your account has not been activated, please enter the activation code below as well.</strong></p>
         </div>
         <div class="col-xs-10 col-xs-offset-1">
             <div class="form-group">
-                <textarea rows=2 class="text-center form-control" placeholder="ICO Seed Words" ng-model="seed"></textarea>
+                <textarea rows=2 class="text-center form-control" placeholder="Fundraiser Seed Words" ng-model="seed"></textarea>
             </div>
             <div class="form-group">
-                <input type="text" class="text-center form-control" ng-model="email" placeholder="ICO Email Address">
+                <input type="text" class="text-center form-control" ng-model="email" placeholder="Fundraiser Email Address">
             </div>
             <div class="form-group">
-                <input type="password" class="text-center form-control" ng-model="ico_password" placeholder="ICO Password">
+                <input type="password" class="text-center form-control" ng-model="ico_password" placeholder="Fundraiser Password">
+            </div>
+            <div class="form-group">
+                <input type="text" class="text-center form-control" ng-model="address" placeholder="Fundraiser Address/Public Key Hash">
             </div>
             <div class="form-group">
                 <input type="text" class="text-center form-control" ng-model="activation_code" placeholder="Activation Code">
