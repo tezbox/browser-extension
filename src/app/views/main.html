@@ -29,7 +29,7 @@
 								<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
 									<li><a ng-click="editMode = true;">Edit Title</a></li>
 									<li><a ng-click="delegate()">Manage Delegate</a></li>
-									<li><a href="http://tzscan.io/{{accounts[account].address}}" target="_blank">View on TZScan</a></li>
+									<li><a href="https://tzscan.io/{{accounts[account].address}}" target="_blank">View on TzScan</a></li>
 									<li ng-show="account > 0"><a ng-click="remove()">Remove Account</a></li>
 									<li ng-show="account === 0"><a ng-click="import()">Import KT1 Account</a></li>
 								</ul>
@@ -86,7 +86,7 @@
       <div class='tx' ng-repeat="tx in transactions track by $index">
             <blocky class="avatar" seed='{{tx.to}}' size='8' scale='16'></blocky>
             <h3 class="date">{{tx.date}}</h3>
-            <span class="opHash"><a href="{{'http://tzscan.io/' + tx.hash}}" ng-click="openTransaction(tx.hash)">{{tx.hash.slice(0,11)}}..</a></span>
+            <span class="opHash"><a href="{{'https://tzscan.io/' + tx.hash}}" ng-click="openTransaction(tx.hash)">{{tx.hash.slice(0,11)}}..</a></span>
             <span class="amt">{{tx.amount.toFixed(2)}}ꜩ</span>
       </div>
   </div>
