@@ -1,4 +1,4 @@
-
+dist/*
 ignore/src.zip
 ignore/src.crx
 ignore/src.pem

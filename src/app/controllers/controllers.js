@@ -137,7 +137,7 @@ app.controller('NewController', ['$scope', '$location', 'Storage', function($sco
       if (!confirm("Creating a new account incurs an origination fee of ~0.25XTZ - do you want to continue?")) return;
       var keys = Storage.keys;
       window.showLoader();      
-      window.eztz.rpc.account(keys, 0, true, true, keys.pkh, 0).then(function(r){
+      window.eztz.rpc.account(keys, 0, true, true, null, 0).then(function(r){
         $scope.$apply(function(){
           var address = window.eztz.contract.hash(r.hash, 0);
           if ($scope.accounts[$scope.accounts.length-1].address != address){
