@@ -5,9 +5,10 @@
         </div>
     </div>
 
-
+    <div class="med-container">
+      <h2 class="med-title">Validate your TezBox</h2>
     <div class="row text-center">
-        <div class="col-xs-12">
+        <div class="col-md-12">
             <p class="alert alert-warning"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Please re-enter your seed words and passphrase to confirm that you have correctly recorded these</strong></p>
         </div>
         <div class="col-xs-10 col-xs-offset-1">
@@ -18,10 +19,12 @@
                 <input type="password" class="text-center form-control" ng-model="passphrase" placeholder="Passphrase">
             </div>
         </div>
-        <div class="col-xs-10 col-xs-offset-1">
+        <div class="col-md-4 col-md-offset-4">
             <a ng-click="validate()" class="btn btn-success btn-block">Create TezBox</a>
             <br />
-          <a ng-click="cancel()" class="btn-link">Cancel</a>
+            
+            <a ng-click="cancel()" class="btn-link">Cancel</a>
         </div>
+    </div>
     </div>
 </div>

@@ -4,7 +4,9 @@
             <span class="logo"><img class="logoSmall" src="skin/images/logo.png" /> TEZBOX</span>
         </div>
     </div>
-
+    
+    <div class="med-container">
+      <h2 class="med-title">Restore your TezBox</h2>
     <div class="row text-center tabChoices">
       <div class="col-xs-4">
         <a ng-click="type = 'seed'" ng-class="type == 'seed' ? 'selected' : ''">Seed Phrase</a>
@@ -13,12 +15,12 @@
         <a  ng-click="type = 'private'" ng-class="type == 'private' ? 'selected' : ''">Private Key</a>
       </div>
       <div class="col-xs-4">
-        <a  ng-click="type = 'ico'" ng-class="type == 'ico' ? 'selected' : ''">ICO<br /> Wallet</a>
+        <a  ng-click="type = 'ico'" ng-class="type == 'ico' ? 'selected' : ''">Fundraiser Wallet</a>
       </div>
     </div>
     <div ng-show="type == 'seed'" class="row text-center">
       <div class="col-xs-12">
-            <p class="alert alert-info"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Please enter your seed and passphrase below and we will attempt to restore your wallet. If you are trying to restore your Fundraiser/ICO wallet please select the 'ICO Wallet' tab instead (even if you have restored it previously)</strong></p>
+            <p class="alert alert-info"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Please enter your seed and passphrase below and we will attempt to restore your wallet. If you are trying to restore your Fundraiser/ICO wallet please select the 'Fundraiser Wallet' tab instead (even if you have restored it previously)</strong></p>
         </div>
         <div class="col-xs-10 col-xs-offset-1">
             <div class="form-group">
@@ -27,11 +29,6 @@
             <div class="form-group">
                 <input type="password" class="text-center form-control" ng-model="passphrase" placeholder="Optional Passphrase">
             </div>
-        </div>
-        <div class="col-xs-10 col-xs-offset-1">
-            <a ng-click="restore()" class="btn btn-success btn-block">Restore TezBox</a>
-            <br />
-            <a ng-click="cancel()" class="btn-link">Cancel</a>
         </div>
     </div>
     <div ng-show="type == 'private'" class="row text-center">
@@ -43,11 +40,6 @@
                 <input type="password" class="text-center form-control" ng-model="private_key" placeholder="Private Key">
             </div>
         </div>
-        <div class="col-xs-10 col-xs-offset-1">
-            <a ng-click="restore()" class="btn btn-success btn-block">Restore TezBox</a>
-            <br />
-            <a ng-click="cancel()" class="btn-link">Cancel</a>
-        </div>
     </div>
     <div ng-show="type == 'ico'" class="row text-center">
       <div class="col-xs-12">
@@ -57,23 +49,34 @@
             <div class="form-group">
                 <textarea rows=2 class="text-center form-control" placeholder="Fundraiser Seed Words" ng-model="seed"></textarea>
             </div>
+        </div>
+        <div class="col-xs-5 col-xs-offset-1">
             <div class="form-group">
                 <input type="text" class="text-center form-control" ng-model="email" placeholder="Fundraiser Email Address">
             </div>
+        </div>
+        <div class="col-xs-5">
             <div class="form-group">
                 <input type="password" class="text-center form-control" ng-model="ico_password" placeholder="Fundraiser Password">
             </div>
+        </div>
+        <div class="col-xs-5 col-xs-offset-1">
             <div class="form-group">
                 <input type="text" class="text-center form-control" ng-model="address" placeholder="Fundraiser Address/Public Key Hash">
             </div>
+        </div>
+        <div class="col-xs-5">
             <div class="form-group">
                 <input type="text" class="text-center form-control" ng-model="activation_code" placeholder="Activation Code">
             </div>
         </div>
-        <div class="col-xs-10 col-xs-offset-1">
+    </div>
+    <div class="row text-center">
+        <div class="col-xs-4 col-xs-offset-4">
             <a ng-click="restore()" class="btn btn-success btn-block">Restore TezBox</a>
             <br />
             <a ng-click="cancel()" class="btn-link">Cancel</a>
         </div>
+    </div>
     </div>
 </div>

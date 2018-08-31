@@ -5,21 +5,24 @@
         </div>
     </div>
 
-
+    <div class="med-container">
+      <h2 class="med-title">Create your TezBox</h2>
     <div class="row text-center">
-        <div class="col-xs-12">
-             <p class="alert alert-danger"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Please write your seed words below and store them in a secure place. These can be used to restore your wallet.</strong></p>
+        <div class="col-md-12">
+            <p class="alert alert-danger"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Please write your seed words below and store them in a secure place. These can be used to restore your wallet.</strong></p>
         </div>
-        <div class="col-xs-10 col-xs-offset-1">
-            <p class="mnemonic">{{mnemonic}}</p>
+        <div class="col-md-10 col-md-offset-1">
+            <p class="mnemonic" ng-bind-html="showSeed(mnemonic)"></p>
             <div class="form-group">
                 <input autocomplete="off" type="password" class="text-center form-control" ng-model="passphrase" placeholder="Optional Passphrase">
             </div>
         </div>
-        <div class="col-xs-10 col-xs-offset-1">
-            <a ng-click="create()" class="btn btn-success btn-block">Create TezBox</a>
+        <div class="col-md-4 col-md-offset-4">
+            <a ng-click="create()" class="btn btn-success btn-block">Continue</a>
             <br />
-          <a ng-click="cancel()" class="btn-link">Cancel</a>
+            
+            <a ng-click="newMnemonic()" class="btn-link"><a ng-click="cancel()" class="btn-link">Cancel</a>
         </div>
+    </div>
     </div>
 </div>

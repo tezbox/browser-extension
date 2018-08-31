@@ -15,7 +15,9 @@ app.service('Storage', function() {
     };
     r.clearStore = function(){
       r.keys = {};
+      var s = r.loadSetting();
       localStorage.clear();
+      r.setSetting(s);
     };
     r.setSetting = function(v){
         localStorage.setItem('tbsetting', JSON.stringify(v));
