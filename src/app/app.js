@@ -20,6 +20,10 @@ app.config(function($routeProvider) {
         templateUrl : chrome.extension.getURL("app/views/restore.html"),
         controller : "RestoreController",
     })
+    .when("/link", {
+        templateUrl : chrome.extension.getURL("app/views/link.html"),
+        controller : "LinkController",
+    })
     .when("/validate", {
         templateUrl : chrome.extension.getURL("app/views/validate.html"),
         controller : "ValidateController",

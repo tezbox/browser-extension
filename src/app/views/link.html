@@ -1,0 +1,59 @@
+<div>
+    <div class="row mainHeaderBox">
+        <div class="col-xs-6">
+            <span class="logo"><img class="logoSmall" src="skin/images/logo.png" /> TEZBOX</span>
+        </div>
+    </div>
+    
+    <div class="med-container">
+      <h2 class="med-title">Link your TezBox</h2>
+    <div class="row text-center tabChoices">
+      <div class="col-xs-4">
+        <a ng-click="type = 'ledger'" ng-class="type == 'ledger' ? 'selected' : ''">Ledger</a>
+      </div>
+      <!--<div class="col-xs-4">
+        <a  ng-click="type = 'trezor'" ng-class="type == 'trezor' ? 'selected' : ''">Trezor</a>
+      </div>
+      <div class="col-xs-4">
+        <a  ng-click="type = 'offline'" ng-class="type == 'offline' ? 'selected' : ''">Offline Signer</a>
+      </div>-->
+    </div>
+    <div ng-show="type == 'ledger'" class="row text-center">
+      <div class="col-xs-12">
+            <p class="alert alert-info"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Currently only the Ledger Nano S is supported - please also ensure the Tezos Wallet app has been setup on your Ledger and is currently open.</strong></p>
+        </div>
+        <div class="col-xs-10 col-xs-offset-1">
+            <div class="form-group">
+               <label class="text-center">HD Derivation Path</label>
+               <p>Advanced option to access different addresses - leave as it is to use the default key</p>
+               <input type="text" class="text-center form-control" ng-model="data" placeholder="Address Path">
+            </div>
+        </div>
+    </div>
+    <div ng-show="type == 'trezor'" class="row text-center">
+      <div class="col-xs-12">
+            <p class="alert alert-info"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Trezor support coming soon...</strong></p>
+        </div>
+        <div class="col-xs-10 col-xs-offset-1">
+
+        </div>
+    </div>
+    <div ng-show="type == 'offline'" class="row text-center">
+      <div class="col-xs-12">
+            <p class="alert alert-info"><i class="leftIcon fas fa-exclamation-circle"></i><strong>This method is effectively a view-only wallet. You can use an offline signing tool (an official TezBox tool is currently being developed).</strong></p>
+        </div>
+        <div class="col-xs-10 col-xs-offset-1">
+            <div class="form-group">
+               <input type="text" class="text-center form-control" ng-model="address" placeholder="tz Address/Public Key">
+            </div>
+        </div>
+    </div>
+    <div class="row text-center">
+        <div class="col-xs-4 col-xs-offset-4">
+            <a ng-click="link()" class="btn btn-success btn-block">Link TezBox</a>
+            <br />
+            <a ng-click="cancel()" class="btn-link">Cancel</a>
+        </div>
+    </div>
+    </div>
+</div>

@@ -10,16 +10,25 @@
           <br />
         </div>
       </div>
-      <div class="row" ng-show="setting.disclaimer">
+      <div ng-show="setting.disclaimer">
+          <div  class="row">
           <div class="col-md-6 col-md-offset-3">
             <a ng-click="create()" class="btn btn-success btn-block">Create TezBox</a>
-          <br />
-            <a ng-click="restore()" class="btn btn-primary btn-block">Restore TezBox</a>
+            <br />
+          </div>
+          </div>
+          <div  class="row">
+          <div class="col-md-3 col-md-offset-3">
+            <a ng-click="restore()" class="btn btn-primary btn-block">Restore</a>
+          </div>
+          <div class="col-md-3">
+            <a ng-click="link()" class="btn btn-primary btn-block">Link</a>
+          </div>
           </div>
       </div>
       <div class="row" ng-hide="setting.disclaimer">
           <div class="col-md-10 col-md-offset-1">
-            <p class="alert alert-warning"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Be warned that you are dealing with the live <a href="https://tezosfoundation.ch/news/tezos-betanet-expectations/" target="_blank">Tezos Betanet</a>. Please read and accept our <a href="https://tezbox.github.io/disclaimer.html" target="_blank">Disclaimer</a> before proceeding.</strong></p>
+            <p class="alert alert-warning"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Be warned that you are dealing with the mainnet, which is a LIVE NETWORK. All transactions on this network are final.</p>
           </div>
           <div class="col-md-6 col-md-offset-3">
             <a ng-click="acceptDisclaimer()" class="btn btn-success btn-block">I Accept</a>

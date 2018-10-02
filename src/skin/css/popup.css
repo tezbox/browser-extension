@@ -436,14 +436,30 @@ position: absolute;
     position: absolute;
     left: 0;
 }
-.transactions .tx h3.date{
-      margin: 0;
+.transactions .tx span.date{
     font-size: 15px;
     font-weight:bold;
     color:#555;
  
 }
+.transactions .tx span.dir.green{
+  color: green;
+}
+.transactions .tx span.dir.red{
+  color: red;
+}
+.transactions .tx span.dir{
+  font-size: 15px;
+  
+}
 .transactions .tx span.opHash{
+    font-size: 15px;
+}
+.transactions .tx span.amt.red{
+  color: red;
+}
+.transactions .tx span.amt.green{
+  color: green;
 }
 .transactions .tx span.amt{
       position: absolute;
@@ -451,7 +467,6 @@ position: absolute;
     font-size: 15px;
     font-weight: bold;
     color:#B9013B;
-     top: 10px;
 }
 .sidebar li>a>span{
   position: absolute;
@@ -487,6 +502,5 @@ position: absolute;
 }
 .mainTabs .tab-pane#transactions{
    overflow-y: scroll;
-    height: 300px; 
    
 }
