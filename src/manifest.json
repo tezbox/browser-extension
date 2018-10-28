@@ -13,18 +13,13 @@
     "background": {
       "scripts": [
         "background.js"
-      ],
-      "persistent": true
+      ]
     },
     "browser_action": {
         "default_icon": {
             "19": "skin/images/icon-19.png",
             "38": "skin/images/icon-38.png"
         }
-    },
-    "externally_connectable": {
-        "matches": [
-        ]
     },
     "permissions": [
         "http://*/*",
@@ -33,5 +28,7 @@
         "unlimitedStorage",
         "clipboardWrite",
         "<all_urls>"
-    ]
+    ],
+    "web_accessible_resources": ["skin/images/*"],
+    "content_security_policy": "img-src 'self' 'unsafe-eval'; script-src 'self' 'unsafe-eval' https://www.google-analytics.com; object-src 'self'"
 }

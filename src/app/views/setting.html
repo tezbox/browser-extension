@@ -1,50 +1,36 @@
-<div>
-    <div class="row mainHeaderBox">
-        <div class="col-xs-6">
-            <span class="logo"><img class="logoSmall" src="skin/images/logo.png" /> TEZBOX</span>
+<div class="main">
+  <div class="mainBgCover"></div>
+  <div class="header">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <span class="logo"><img class="logoSmall" src="skin/images/logo.png" /> TEZBOX</span>
         </div>
+      </div>
     </div>
-    
-    <div class="med-container">
-      <h2 class="med-title">TezBox Settings</h2>
-
-      <div class="row text-center">
-        <div class="col-xs-12">
-              <p class="alert alert-info"><i class="leftIcon fas fa-exclamation-circle"></i><strong>Please be careful with changing or interacting with these settings.</strong></p>
-          </div>
-      </div>
-      <div class="col-xs-10 col-md-offset-1">
+  </div>
+  <div class="med-container">
+    <h2 class="med-title">{{translate('tezbox_settings')}}</h2>
+    <div class="container-box">
+      <div class="row">
+        <div class="col-md-12">
+          <p class="alert alert-info"><i class="leftIcon fas fa-exclamation-circle"></i><strong>{{translate('tezbox_settings_info')}}</strong></p>
+        </div>
+        <div class="col-md-12">
           <div class="form-group">
-              <label class="text-center">Export Private Key</label>
-              <p>Please be careful with this option, as anyone viewing your screen will see the private key below</p>
-              <p ng-show="privateKey" style="overflow-wrap: break-word;
-    text-align: center;padding:10px 0;font-size:10px;padding:5px;background-color: #f0f0f0;"><strong>{{privateKey}}</strong></p>
+            <label>{{translate('rpc_address')}}</label>
+            <p>{{translate('rpc_address_info')}}</p>
             <div class="row">
-              <div class="col-xs-6">
-                <input type="password" placeholder="Enter your password to show" class="text-left form-control" ng-model="password">
-              </div>
-              <div class="col-xs-3">
-                <a ng-click="show()" class="btn btn-success btn-small btn-block">Show</a>
-              </div>
-            </div>
-          </div>
-      </div>
-      <div class="col-md-10 col-md-offset-1">
-          <div class="form-group">
-              <label class="text-center">RPC Address</label>
-              <p>When running your own node, you can use your IP/domain here to connect to it by default. This needs to be available via SSL (HTTPS) to work with this wallet.</p>
-            <div class="row">
-              <div class="col-xs-6">
+              <div class="col-md-6">
                 <input type="text" class="text-left form-control" ng-model="setting.rpc">
               </div>
             </div>
           </div>
-      </div>
-      <div class="row text-center">
-          <div class="col-xs-4 col-xs-offset-4">
-              <a ng-click="save()" class="btn btn-success btn-block">Save</a>
-          </div>
+        </div>
+        <div class="col-md-3">
+          <a ng-click="save()" class="btn btn-primary btn-block">{{translate('back')}}</a>
+        </div>
       </div>
     </div>
-      
+  </div>
 </div>

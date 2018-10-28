@@ -1,27 +1,36 @@
-<div class="text-center" style="padding-top:30px;">
-    <div class="small-container">
-
+<div class="main">
+  <div class="no-container">
     <div class="row">
-      <div class="col-xs-10 col-xs-offset-1">
-        <img class="logoBig" src="skin/images/logo.png" />
-        <h2 class="header">TezBox</h2>
-        <h3 class="header">Welcome Back!</h3>
-        <br />
-        <br />
+      <div class="col-md-10 col-md-offset-1">
+        <div class="mainLogo">
+          <img class="logo" src="skin/images/logo.png" />
+          <div>
+            <h1>TezBox</h2>
+            <h2>{{translate("secure_tezos_wallet")}}</h2>
+          </div>
+        </div>
       </div>
     </div>
     <div class="row">
-        <div class="col-xs-10 col-xs-offset-1">
-          <div class="form-group">
-              <label for="exampleInputEmail1">Enter Password</label>
-              <input type="password" class="text-center form-control" ng-model="password">
+      <div class="col-md-8 col-md-offset-2">
+        <div class="row text-center">
+          <div class="col-md-12 mb-20">
+            <h3 class="sm-title">{{translate("welcome_back")}}</h3>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="exampleInputEmail1">{{translate('enter_password')}}</label>
+              <input autocomplete=false type="password" class="form-control" ng-model="password">
             </div>
+          </div>
+          <div class="col-md-10 col-md-offset-1 mt-20">
+            <a ng-click="unlock()" class="btn btn-primary btn-block">{{translate('unlock_wallet')}}</a>
+          </div>
+          <div class="col-md-10 col-md-offset-1 mt-20">
+            <a ng-click="clear()">{{translate('clear_tezbox')}}</a>
+          </div>
         </div>
-        <div class="col-xs-10 col-xs-offset-1">
-          <a ng-click="unlock()" class="btn btn-success btn-block">Unlock Wallet</a>
-          <br />
-          <a ng-click="clear()" class="btn-link">Clear TezBox</a>
-        </div>
+      </div>
     </div>
-    </div>
+  </div>
 </div>
