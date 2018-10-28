@@ -109,7 +109,7 @@ app
 .controller('MainController', ['$scope', '$location', '$http', 'Storage', 'SweetAlert', 'Lang', function($scope, $location, $http, Storage, SweetAlert, Lang) {
   var ss = Storage.loadStore();
   if (!ss || !ss.ensk || typeof Storage.keys.sk == 'undefined'){
-     //$location.path('/new');
+     $location.path('/new');
   }
   if (typeof ss.temp != 'undefined') delete ss.temp;
   $scope.type = "encrypted";
