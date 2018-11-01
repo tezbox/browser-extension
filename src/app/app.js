@@ -47,6 +47,10 @@ var app = angular.module('popup', [
     templateUrl : chrome.extension.getURL("app/views/setting.html"),
     controller : "SettingController",
   })
+	.when("/load", {
+    templateUrl : chrome.extension.getURL("app/views/load.html"),
+    controller : "LoadController",
+  })
   .otherwise({
     redirectTo: '/new'
   });
