@@ -66,6 +66,7 @@ app.service('Lang', ["$sce", function($sce) {
         "clear_tezbox" : "Clear TezBox",
         "back" : "Back",
         "show" : "Show",
+        "hide" : "Hide",
         "seed_words_mnenomic" : "Seed Words/Mnenomic (leave a space between each word)",
         "seed_words_mnenomic_placeholder" : "Enter Seed Words",
         "optional_passphrase" : "Optional Passphrase",
@@ -217,7 +218,7 @@ app.service('Lang', ["$sce", function($sce) {
       if (typeof rep != 'undefined' && typeof _translations[_lang][id] != 'undefined'){
         var tt = _translations[_lang][id];
         for(var i = 0; i < rep.length; i++){
-          tt.replace("$$", rep[i]);
+          tt = tt.replace("$$", rep[i]);
         }
         return tt;
       } else return (typeof _translations[_lang][id] != 'undefined' ? _translations[_lang][id] : _lang + "." + id);
