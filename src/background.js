@@ -306,7 +306,7 @@ function initTezTrezor(){
 var teztrezor = initTezTrezor();
 
 //TBAPI Integration
-var pendingRequest = false, results = {};
+var pendingRequest = false, pendingResult;
 function extractHostname(url) {
 	var hostname;
 	if (url.indexOf("//") > -1) {
@@ -326,7 +326,7 @@ var getSender = function(s){
 //Communication layer
 chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
   if (request.action == 'tbapiResult'){
-		results[request.method] = request.data;
+		pendingResult = request.data;
 		return false;
   } else if (request.action == 'tbapi') {
 		var isWhitelisted = false, isBlacklisted = false, tbsettings = JSON.parse(localStorage.getItem('tbsetting')), tbstore = JSON.parse(localStorage.getItem('tbstore')), connectionError = {success:false, error:"Timeout or Communication error"};
@@ -345,15 +345,15 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
 			tbsettings.blacklist = [];
 			localStorage.setItem('tbsetting', JSON.stringify(tbsettings));
 		}
-		if (typeof tbsettings.allowApi == 'undefined') {
-			tbsettings.allowApi = true;
+		if (typeof tbsettings.apiMode == 'undefined') {
+			tbsettings.apiMode = true;
 			localStorage.setItem('tbsetting', JSON.stringify(tbsettings));
 		}
 		
 		isWhitelisted = (tbsettings.whitelist.indexOf(sender) >= 0);
 		isBlacklisted = (tbsettings.blacklist.indexOf(sender) >= 0);
 		
-		if (!tbsettings.allowApi) {
+		if (!tbsettings.apiMode) {
 			sendResponse({success:false, error:"API mode disabled"});			
 			return false;
 		}
@@ -382,7 +382,7 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
 				return false;
 			} else {
 				pendingRequest = true;
-				results['access'] = connectionError;
+				pendingResult = connectionError;
 				chrome.storage.local.set({ 
 					'promptData': sender     
 				});
@@ -390,8 +390,8 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
 					chrome.windows.onRemoved.addListener(function l(id) {
 						if(id === w.id){
 							pendingRequest = false;
-							sendResponse(results['access']);
-							results['access'] = '';
+							sendResponse(pendingResult);
+							pendingResult = '';
 							chrome.windows.onRemoved.removeListener(l);
 						}
 					});          
@@ -405,35 +405,34 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
 			sendResponse({success:false, error:"Not whitelisted"});	
 			return false;
 		} 
-		if (request.method == 'getActiveAccount'){
-			sendResponse({success:true, data: tbstore.accounts[tbstore.account]});
-			return false;
-		} 
 		if (request.method == 'getAllAccounts'){
 			sendResponse({success:true, data: tbstore.accounts});			
 			return false;
 		} 
 		if (request.method == 'initiateTransaction'){
 			pendingRequest = true;
-			results['transfer'] = connectionError;
+			pendingResult = connectionError;
+			console.log(request.data);
 			chrome.storage.local.set({ 
-				'promptData': {}     
+				'promptData': request.data   
 			});//todo
-			chrome.windows.create({'url': chrome.extension.getURL("main.html"), 'type': 'popup','width': 357, 'height': 510,}, function(w) {
+			chrome.windows.create({'url': chrome.extension.getURL("popup.html"), 'type': 'popup','width': 357, 'height': 500,}, function(w) {
 				chrome.windows.onRemoved.addListener(function l(id) {
 					if(id === w.id){
 						pendingRequest = false;
-						sendResponse(results['transfer']);
-						results['transfer'] = false;
+						sendResponse(pendingResult);
+						pendingResult = false;
 						chrome.windows.onRemoved.removeListener(l);
 					}
 				});          
 			});
 			return true;
 		} 
+		return false;
+		//Following method TODO
 		if (request.method == 'signData'){
 			pendingRequest = true;
-			results['sign'] = connectionError;
+			pendingResult = connectionError;
 			chrome.storage.local.set({ 
 				'promptData': {}
 			});//todo
@@ -441,8 +440,8 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
 				chrome.windows.onRemoved.addListener(function l(id) {
 					if(id === w.id){
 						pendingRequest = false;
-						sendResponse(results['sign']);
-						results['sign'] = false;
+						sendResponse(pendingResult);
+						pendingResult = false;
 						chrome.windows.onRemoved.removeListener(l);
 					}
 				});          

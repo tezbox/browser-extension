@@ -9,11 +9,4 @@ window.addEventListener("message", function(event) {
     	window.postMessage({ direction : "out", type : event.data.type, response : response}, "*");
   });
 }, false);
-
-var script = document.createElement('script');
-script.src = chrome.extension.getURL('inject.js');
-script.onload = function() {
-    this.remove();
-};
-(document.head || document.documentElement).appendChild(script);
-console.log("TezBox API has been injected!");
+console.log("TezBox API is ready!");
