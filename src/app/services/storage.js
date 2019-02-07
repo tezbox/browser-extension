@@ -45,6 +45,35 @@ app.service('Storage', function() {
   };
   r.loadSetting = function(){
     r.settings = JSON.parse(localStorage.getItem('tbsetting'));
+		if (!r.settings){
+			r.settings = {
+				rpc : "https://mainnet.tezrpc.me",
+				language : "english",
+				disclaimer : false,
+				apiMode : true,
+				whitelist : [],
+				blacklist : []
+			};
+			localStorage.setItem('tbsetting', JSON.stringify(r.settings));
+		}
+		var patch = false;
+		if (typeof r.settings.language == 'undefined'){
+      r.settings.language = "english";
+			patch = true;
+    }
+		if (typeof r.settings.apiMode == 'undefined'){
+      r.settings.apiMode = true;
+			patch = true;
+    }
+		if (typeof r.settings.whitelist == 'undefined'){
+      r.settings.whitelist = [];
+			patch = true;
+    }
+		if (typeof r.settings.blacklist == 'undefined'){
+      r.settings.blacklist = [];
+			patch = true;
+    }
+		if (patch) localStorage.setItem('tbsetting', JSON.stringify(r.settings));
     return r.settings;
   };
   r.load();
