@@ -10,22 +10,6 @@ app
   };
   
   $scope.setting = Storage.settings;
-  if (!$scope.setting) {
-    $scope.setting = {
-      rpc : "https://mainnet.tezrpc.me",
-      language : "english",
-      disclaimer : false
-    };
-    Storage.setSetting($scope.setting);
-  } else {
-    //Patch settings
-    var change = false;
-    if (typeof $scope.setting.language == 'undefined'){
-      $scope.setting.language = "english";
-      change = true;
-    }
-    Storage.setSetting($scope.setting);
-  }
   window.eztz.node.setProvider($scope.setting.rpc);
   Lang.setLang($scope.setting.language);
   if ($scope.setting.disclaimer) {
@@ -737,8 +721,41 @@ app
 	}, 20000);
 }])
 .controller('SettingController', ['$scope', '$location', 'Storage', 'SweetAlert', 'Lang', function($scope, $location, Storage, SweetAlert, Lang) {
-  $scope.setting = Storage.settings;
+  $scope.setting = Storage.loadSetting();
   
+	$scope.removeFromList = function(l, v){
+		if (['whitelist', 'blacklist'].indexOf(l) < 0) return false;
+		if ($scope.setting[l].indexOf(v) < 0) return false;
+		SweetAlert.swal({
+      title: Lang.translate('are_you_sure'),
+      text: Lang.translate('remove_list', [v,l]),
+      type : "warning",
+      showCancelButton: true,
+      confirmButtonText: Lang.translate('yes_clear_it'),
+      closeOnConfirm: true
+    },
+    function(isConfirm){
+      if (isConfirm){
+				return $scope.setting[l].splice($scope.setting[l].indexOf(v), 1);
+      }
+    });
+	}
+	$scope.clearList = function(l){
+		if (['whitelist', 'blacklist'].indexOf(l) < 0) return false;
+		SweetAlert.swal({
+      title: Lang.translate('are_you_sure'),
+      text: Lang.translate('clear_list', [l]),
+      type : "warning",
+      showCancelButton: true,
+      confirmButtonText: Lang.translate('yes_clear_it'),
+      closeOnConfirm: true
+    },
+    function(isConfirm){
+      if (isConfirm){
+				return $scope.setting[l] = [];
+      }
+    });
+	}
   $scope.save = function(){
     Storage.setSetting($scope.setting);
     window.eztz.node.setProvider($scope.setting.rpc);

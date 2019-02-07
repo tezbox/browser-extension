@@ -214,6 +214,14 @@ app.service('Lang', ["$sce", function($sce) {
         "transaction_confirm_info" : "You are about to send $$XTZ to $$ - this transaction is irreversible",
         "transaction_confirm_lowtz" : "You are sending to an empty implicity (tz) account - this will incur an additional fee of 0.257XTZ. Do you want to continue?",
         "extra_fee" : "Additional fees!",
+        "remove_list" : "Are you sure you want to remove '$$' from your $$?",
+        "clear_list" : "Are you sure you want to clear your $$? All apps will be removed from this list if you confirm.",
+        "blacklist" : "Blacklist",
+        "whitelist" : "Whitelist",
+        "api_mode" : "API Mode",
+        "api_mode_info" : "Developers can use the API to integrate their websites with TezBox. This is secure, and no data is shared without your permission (sensitive data is NEVER shared).",
+        "api_access_list" : "API Access List",
+        "api_access_info" : "You can managed allowed (whitelisted) and blocked (blacklisted) websites below.",
       }
 
     },
