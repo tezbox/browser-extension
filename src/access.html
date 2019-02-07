@@ -1,0 +1,22 @@
+<html>
+<head><title>Requesting Access...</title></head>
+<body>
+<h1>Request Access</h1>
+<div id="loader">Loading...</div>
+<div id="main" style="display:none;">
+	<p>The host "<span id="sender"></span>" is requesting access to your TezBox account. This will allow them to:</p>
+	<ul>
+		<li>View the public address and title of your accounts</li>
+		<li>View your public key</li>
+		<li>Initiate a transaction request (which you need to approve)</li>
+		<li>Initiate a signing request (which you need to approve)</li>
+	</ul>
+	<p><strong>No private data, including your password and private key/seed, are exposed</strong></p>
+	<button id="whitelist">Approve (whitelist)</button>
+	<button id="reject">Reject</button>
+	<button id="blacklist">Block (blacklist)</button>
+	<p>Access options can be modifed from the Settings menu within TezBox</p>
+<div>
+<script src="skin/js/access.js"></script>
+</body>
+</html>
