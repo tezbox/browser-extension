@@ -1,0 +1,78 @@
+<div class="main">
+  <div class="header">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 text-center">
+          <span class="logo"><img class="logoSmall" src="skin/images/logo.png" /> TEZBOX</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mainBody">
+    <div class="container">
+			<div class="row mainContainer">
+				<div class="col-md-12" style="position:initial;">
+					<div class="row mt-20">
+						<div class="col-xs-6">
+							<div class="form-group smavatar">
+								<label>From</label>
+								<p><blocky class="avatar" seed='{{getBlocky(fromaddress)}}' size='8' scale='16'></blocky> {{accountTitle}}</p>
+							</div>
+						</div>
+						<div class="col-xs-6">
+							<div class="form-group smavatar">
+								<label>To</label>
+								<p><blocky class="avatar" seed='{{getBlocky(toaddress)}}' size='8' scale='16'></blocky>{{toaddress}}</p>
+							</div>
+						</div>
+					</div>
+					<hr style="margin-top:10px;"/>
+					<div class="row">
+						<div class="col-sm-6">
+							<div class="form-group">
+								<label>Amount</label>
+								<h2 style="margin-top:0;">{{amount}}ꜩ</h2>
+								<label ng-show="parameters">Parameters/Data</label>
+								<p ng-show="parameters">{{parameters}}</p>
+							</div>
+						</div>
+					</div>
+					<hr style="margin-top:0;" />
+					<div class="row">
+						<div class="col-xs-12">
+							<div class="form-group">
+								<label>{{translate("fee")}} μꜩ <span style="color:red;">*</span> <i class="leftIcon fas fa-question-circle" data-toggle="tooltip" data-placement="right" title="{{translate('fee_tooltip')}}" tooltip></i><a ng-show="!showCustom" style="position: absolute;right: 15px;cursor:pointer;" ng-click="customFee = fee; showCustom = true">{{translate("custom_fee")}}</a><a ng-show="showCustom" style="position: absolute;right: 15px;cursor:pointer;" ng-click="customFee = 0; showCustom = false">{{translate("fee_options")}}</a></label>
+								<input ng-show="showCustom" type="number" class="form-control" ng-model="customFee">
+								<select ng-show="!showCustom" class="form-control" ng-model="fee" number-select>
+									<option value="1420">{{translate("low")}} - 1420μꜩ</option>
+									<option value="5000">{{translate("medium")}} - 5000μꜩ</option>
+									<option value="30000">{{translate("high")}} - 30000μꜩ</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-xs-6">
+							<div class="form-group">
+								<label for="exampleInputEmail1">{{translate("gas_limit")}} <i class="leftIcon fas fa-question-circle" data-toggle="tooltip" data-placement="right" title="{{translate('gas_limit_tooltip')}}" tooltip></i></label>
+								<input type="number" class="form-control" ng-model="gas_limit" >
+							</div>
+						</div>
+						<div class="col-xs-6">
+							<div class="form-group">
+								<label for="exampleInputEmail1">{{translate("storage_limit")}} <i class="leftIcon fas fa-question-circle" data-toggle="tooltip" data-placement="right" title="{{translate('storage_limit_tooltip')}}" tooltip></i></label>
+								<input type="number" class="form-control" ng-model="storage_limit" >
+							</div>
+						</div>
+					</div>
+					<div class="row mt-20">
+						<div class="col-md-4 col-lg-3">
+							<a ng-click="confirm()" class="btn btn-small btn-primary btn-block">{{translate("confirm")}}</a>
+						</div>
+						<div class="col-md-4 col-lg-3">
+							<a ng-click="cancel()" class="btn btn-small btn-secondary btn-block">{{translate("cancel")}}</a>
+						</div>
+					</div>
+				</div>
+			</div>
+    </div>
+  </div>
+</div>

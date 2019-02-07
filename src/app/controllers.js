@@ -782,6 +782,7 @@ app
       }
     });
   }
+	$scope.cancel = function(){window.close();} //for API
   $scope.unlock = function(){
     if (!$scope.password) return SweetAlert.swal(Lang.translate('uh_oh'), Lang.translate('please_enter_password'), 'error');
     window.showLoader();
@@ -1022,5 +1023,263 @@ app
     }
     restoreEnd(keys);
   };
+}]).controller('PopupController', ['$scope', '$location', '$http', 'Storage', 'SweetAlert', 'Lang', function($scope, $location, $http, Storage, SweetAlert, Lang) {
+	
+	window.resizeTo(window.outerWidth, 700);
+	var ss = Storage.data;
+  if (!ss || !ss.ensk || typeof Storage.keys.sk == 'undefined'){
+     window.close();
+  }
+  if (typeof ss.temp != 'undefined') delete ss.temp;
+  $scope.type = Storage.keys.type;
+  $scope.setting = Storage.loadSetting();
+  $scope.fromaddress = '';
+  $scope.toaddress = '';
+  $scope.amount = 0;
+  $scope.parameters = '';
+	$scope.accountTitle = '';
+  $scope.fee = 1420;
+  $scope.customFee = 1420;
+  $scope.showCustom = false;
+  $scope.gas_limit = 10300;
+  $scope.storage_limit = 300;
+	var apiError = function(e){
+		chrome.runtime.sendMessage({ action : "tbapiResult", data: {success : false, error : e} });
+		window.close();
+	}
+	var apiSuccess = function(d){
+		chrome.runtime.sendMessage({ action : "tbapiResult", data: {success : true, data : d} });
+		window.close();
+	}
+	chrome.storage.local.get("promptData", function (data) {
+		$scope.$apply(function(){
+			console.log(data);
+			if (typeof data.promptData == 'undefined') return apiError("No data sent");
+			if (typeof data.promptData.source == 'undefined') return apiError("No source address");
+			if (typeof data.promptData.destination == 'undefined') return apiError("No destination address");
+			if (typeof data.promptData.amount == 'undefined') return apiError("No amount");
+			if (data.promptData.amount != parseFloat(data.promptData.amount)) return apiError("Invalid amount")
+			
+			var found = false;
+			for(var i = 0; i < ss.accounts.length; i++){
+				if (ss.accounts[i].address == data.promptData.source) {
+					found = true;
+					$scope.accountTitle = ss.accounts[i].title;
+					break;
+				}
+			}
+			if (!found) apiError("Not a valid source address")
+			
+			$scope.fromaddress = data.promptData.source;
+			$scope.toaddress = data.promptData.destination;
+			$scope.amount = data.promptData.amount;
+			
+			if (typeof data.promptData.parameters != 'undefined') $scope.parameters = data.promptData.parameters;
+			if (typeof data.promptData.gas_limit != 'undefined') $scope.gas_limit = data.promptData.gas_limit;
+			if (typeof data.promptData.storage_limit != 'undefined') $scope.storage_limit = data.promptData.storage_limit;
+			if (typeof data.promptData.fee != 'undefined') {
+				$scope.customFee = data.promptData.fee;
+				$scope.showCustom = true;
+			}
+			window.hideLoader();
+		});
+	});
+
+  $scope.getBlocky = function(a){
+		return "0" + window.eztz.utility.b582int(a);
+	}
+	
+  var remoteSign = function(t, op){
+    switch(t){
+      case "ledger":
+        op = op.then(function(r){
+          SweetAlert.swal({
+            title: '',
+            imageUrl: "skin/images/ledger-logo.svg",
+            text: Lang.translate('ledger_confirm_transaction'),
+            showCancelButton: true,
+            showConfirmButton: false,
+          }, function(c){
+            if (!c) {
+              window.hideLoader();
+              cancelled = true;
+            }
+          });
+          return window.tezledger.sign(Storage.keys.sk, "03"+r.opbytes).then(function(rr){
+            r.opOb.signature = window.eztz.utility.b58cencode(window.eztz.utility.hex2buf(rr.signature), window.eztz.prefix.edsig);
+            if (!cancelled) return window.eztz.rpc.inject(r.opOb, r.opbytes + rr.signature);
+          });
+        })
+      break;
+      case "trezor":
+        var cancelled = false;
+        op = op.then(function(r){
+          return new Promise(function(resolve, reject){
+            SweetAlert.swal({
+              title: '',
+              imageUrl: "skin/images/trezor-logo.svg",
+              text: "Are you sure you want to connect to your Trezor device?",
+              showCancelButton: true,
+              showConfirmButton: true,
+            }, function(c){
+              if (c){
+                SweetAlert.swal({
+                  title: '',
+                  imageUrl: "skin/images/trezor-logo.svg",
+                  text: Lang.translate('trezor_confirm_transaction'),
+                  showCancelButton: true,
+                  showConfirmButton: false,
+                }, function(c){
+                  if (!c) {
+                    window.hideLoader();
+                    cancelled = true;
+                    reject();
+                  }
+                });
+                var tops = eztz.trezor.operation(r);
+                window.teztrezor.sign(Storage.keys.sk, eztz.utility.b58cdecode(r.opOb.branch, eztz.prefix.b), tops[0], tops[1]).then(function(rr){
+                  r.opOb.signature = rr.signature;
+                  if (!cancelled){
+                    resolve(window.eztz.rpc.inject(r.opOb, eztz.utility.buf2hex(rr.sigOpContents)));      
+                  } else reject()                        
+                }).catch(reject);
+              } else {
+                cancelled = true;
+                window.hideLoader();
+                reject();
+              }
+            });
+          });
+        })
+      break;
+      case "offline":
+      default:
+        window.hideLoader();
+        SweetAlert.swal(Lang.translate('uh_oh'), Lang.translate('error_undeveloped'), 'error')
+        return;
+      break;
+    }
+    return op;
+  }
+	
+  $scope.toTez = function(m){
+    return window.eztz.utility.totez(parseInt(m));
+  }
+  
+	$scope.copy = function(){
+    SweetAlert.swal(Lang.translate('awesome'), Lang.translate('copy_clipboard'), "success");
+    window.copyToClipboard($scope.accounts[$scope.account].address);
+  };
+
+	//max amount
+	
+	function checkAddress(a){
+		return new Promise(function(resolve, reject){
+			if (a.substr(0,2) == "tz") {
+				window.showLoader();
+				window.eztz.rpc.getBalance(a).then(function(b){
+					window.hideLoader();
+					if (b == 0){
+						SweetAlert.swal({
+							title: Lang.translate('extra_fee'),
+							text: Lang.translate('transaction_confirm_lowtz'),
+							showCancelButton: true,
+							confirmButtonText: Lang.translate('confirm'),
+							closeOnConfirm: true
+						},
+						function(isConfirm){
+							if (isConfirm){
+								resolve();
+							}
+						});
+					} else {
+						resolve();
+					}
+				}).catch(function(e){
+					resolve();
+					window.hideLoader();
+				});
+			} else {
+				resolve();
+			}
+		});
+	}
+  
+	//on-chain functions
+  $scope.confirm = function(){
+    var fee = ($scope.showCustom ? $scope.customFee : $scope.fee);
+    if (!$scope.toaddress || ($scope.toaddress.substring(0, 2) !=  "tz" && $scope.toaddress.substring(0, 3) !=  "KT1")) return SweetAlert.swal(Lang.translate('uh_oh'), Lang.translate('error_valid_destinaton'), 'error');
+    if ($scope.toaddress == $scope.fromaddress) return SweetAlert.swal(Lang.translate('uh_oh'), Lang.translate('error_send_self'));
+    if ($scope.amount < 0) return SweetAlert.swal(Lang.translate('uh_oh'), Lang.translate('error_positive_amount'), 'error');
+    if (fee < 0) return SweetAlert.swal(Lang.translate('uh_oh'), Lang.translate('error_positive_fee'));
+    if (fee != parseInt(fee)) return SweetAlert.swal(Lang.translate('uh_oh'), Lang.translate('error_invalid_fee'), 'error');
+    
+		var check = checkAddress($scope.toaddress);
+		check.then(function(){
+			SweetAlert.swal({
+				title: Lang.translate('are_you_sure'),
+				text: Lang.translate('transaction_confirm_info', [$scope.amount, $scope.toaddress]),
+				type : "warning",
+				showCancelButton: true,
+				confirmButtonText: Lang.translate('yes_send_it'),
+				closeOnConfirm: true
+			},
+			function(isConfirm){
+				if (isConfirm){
+					window.showLoader();
+					var keys = {
+						sk : Storage.keys.sk,
+						pk : Storage.keys.pk,
+						pkh : $scope.fromaddress,
+					};
+					if ($scope.type != "encrypted") keys.sk = false;
+					if ($scope.parameters){
+						var op = window.eztz.contract.send($scope.toaddress, $scope.fromaddress, keys, $scope.amount, $scope.parameters, fee, $scope.gas_limit, $scope.storage_limit);
+					} else {
+						var op = window.eztz.rpc.transfer($scope.fromaddress, keys, $scope.toaddress, $scope.amount, fee, false, $scope.gas_limit, $scope.storage_limit);
+					}
+					
+					var cancelled = false;
+					if ($scope.type != "encrypted"){
+						op = remoteSign($scope.type, op);
+					}
+					
+					op.then(function(r){
+						$scope.$apply(function(){
+							window.hideLoader();
+							if (!cancelled){
+								SweetAlert.swal(Lang.translate('awesome'), Lang.translate('transaction_sent'), "success");
+								apiSuccess(r);
+							}
+						});
+					}).catch(function(r){
+						$scope.$apply(function(){
+							if (!cancelled){
+								window.hideLoader();
+								if (window.isJsonString(r)){
+									r = JSON.parse(r);
+									SweetAlert.swal(Lang.translate('uh_oh'), r[0].error, 'error');
+								} else if (typeof r.name != 'undefined'){
+									SweetAlert.swal(Lang.translate('uh_oh'), Lang.translate('operation_failed') + " " + "Hardware device error", 'error');
+								} else if (r == "TREZOR_ERROR") {
+									SweetAlert.swal(Lang.translate('uh_oh'), Lang.translate('operation_failed') + " " + "Trezor device error", 'error');
+								} else if (typeof r.errors != 'undefined'){
+									ee = r.errors[0].id.split(".").pop();
+									SweetAlert.swal(Lang.translate('uh_oh'), Lang.translate('operation_failed') + " " + r.error + ": Error (" + ee + ")", 'error');
+								} else if (typeof r == 'string') {
+									SweetAlert.swal(Lang.translate('uh_oh'), Lang.translate('operation_failed') + " - " + r, 'error');
+								} else {
+									SweetAlert.swal(Lang.translate('uh_oh'), Lang.translate('operation_failed2'), 'error');
+								}
+							}
+						});
+					});
+				}
+			});
+		});
+	};
+  
+	$scope.cancel = function(){apiError("The user cancelled")};
 }])
+
 ;

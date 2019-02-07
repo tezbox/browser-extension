@@ -222,6 +222,7 @@ app.service('Lang', ["$sce", function($sce) {
         "api_mode_info" : "Developers can use the API to integrate their websites with TezBox. This is secure, and no data is shared without your permission (sensitive data is NEVER shared).",
         "api_access_list" : "API Access List",
         "api_access_info" : "You can managed allowed (whitelisted) and blocked (blacklisted) websites below.",
+        "please_unlock" : "Please Unlock",
       }
 
     },
