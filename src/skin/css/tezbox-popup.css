@@ -78,6 +78,25 @@ input:checked + .slider:before {
   transform: translateX(26px);
 }
 
+.smavatar{
+	margin-bottom:0;
+}
+.smavatar p{
+padding-left: 40px;
+    position: relative;
+    line-height: 30px;
+    padding-top: 10px;
+		white-space: nowrap; 
+  overflow: hidden;
+  text-overflow: ellipsis;
+	margin-bottom:0;
+}
+.smavatar canvas{
+	position: absolute;
+	left:0;
+	width: 30px;
+	border-radius:100%;
+}
 /* Rounded sliders */
 .slider.round {
   border-radius: 34px;
@@ -260,12 +279,12 @@ a {
     bottom: 0;
 }
 .mainContainer{
-position: absolute;
-    top: 230px;
+    position: absolute;
+    /* top: 230px; */
     left: 15px;
     right: 15px;
-    bottom: 40px;
-    overflow: hidden;
+    /* bottom: 40px; */
+    overflow-x: hidden;
 }
 .mainBody {
   position:absolute;
@@ -534,7 +553,7 @@ h1.balance{
   left:0;
   right:0;
   bottom:0;
-  min-width: 1024px!important;
+	    overflow-x: hidden;
 }
 .mainBgCover{
   position: absolute;
@@ -570,30 +589,29 @@ h1.balance{
 }
 
 .mainLogo {
-  position: relative;
-  padding-left: 120px;
-  margin-bottom: 50px;
-  left:30px;
+	position: relative;
+	padding-left: 80px;
+	margin-bottom: 50px;
+	left: 30px;
 }
 .mainLogo .logo {
-  width:100px;
-  position: absolute;
-  left: 10px;
+	width: 75px;
+	position: absolute;
+	left: 10px;
 }
 .mainLogo h2 {
-  margin-top: 0;
-  font-size: 20px;
-  padding-left:10px;
+    margin-top: 0;
+    font-size: 14px;
 }
 .mainLogo h1 {
-  margin-bottom:0;
-  padding-right:25px;
-  padding-top:5px;
-  font-size: 60px;
-  text-transform: uppercase;
-  background: -webkit-gradient(linear, left top, right top, from(#EB1459), to(#672B90));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;C
+    margin-bottom: 0;
+    padding-right: 25px;
+    padding-top: 5px;
+    font-size: 40px;
+    text-transform: uppercase;
+    background: -webkit-gradient(linear, left top, right top, from(#EB1459), to(#672B90));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 .display-privatekey {
   overflow-wrap: break-word;

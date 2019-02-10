@@ -1,3 +1,40 @@
+//Open Tab
+chrome.browserAction.onClicked.addListener(function () {
+    chrome.tabs.create({ url: chrome.runtime.getURL("main.html") });
+});
+
+//Ledger integration
+var ii = document.createElement('iframe');
+ii.setAttribute('src', 'https://tezbox.com/ledger/');
+ii.setAttribute('id', 'the_iframe');
+document.body.appendChild(ii);
+var ledgerIframe = document.getElementById('the_iframe');
+var ledgerActions = {
+  "sign" : false,
+  "getAddress" : false,
+  "trsign" : false,
+  "trgetAddress" : false,
+};
+function ledgerBridge(action, data){
+  return new Promise(function(resolve, reject){
+    data.target = "LEDGER-IFRAME";
+    data.action = action;
+    ledgerActions[action] = [resolve, reject];
+    ledgerIframe.contentWindow.postMessage(data, "*");
+  });  
+}
+window.addEventListener("message", function(e){
+  if (e && e.data && e.data.target === 'TEZBOX-EXT') {
+    if (typeof e.data.success != 'undefined' && e.data.success){
+      ledgerActions[e.data.action][0](e.data.data);      
+    } else {
+      ledgerActions[e.data.action][1](e.data.data);      
+    }
+    ledgerActions[e.data.action] = false;
+  }
+}, false);
+
+//Trezor Integration
 function initTezTrezor(){
   var device, interface, inep, outep, pbroot, isLoaded, pbError;
 
@@ -267,45 +304,151 @@ function initTezTrezor(){
   return tezFns;
 }
 var teztrezor = initTezTrezor();
-chrome.browserAction.onClicked.addListener(function () {
-    chrome.tabs.create({ url: chrome.runtime.getURL("main.html") });
-});
 
-//Ledger integration
-var ii = document.createElement('iframe');
-ii.setAttribute('src', 'https://tezbox.com/ledger/');
-ii.setAttribute('id', 'the_iframe');
-document.body.appendChild(ii);
-var iframe = document.getElementById('the_iframe');
-
-var actions = {
-  "sign" : false,
-  "getAddress" : false,
-  "trsign" : false,
-  "trgetAddress" : false,
-};
-
-function ledgerBridge(action, data){
-  return new Promise(function(resolve, reject){
-    data.target = "LEDGER-IFRAME";
-    data.action = action;
-    actions[action] = [resolve, reject];
-    iframe.contentWindow.postMessage(data, "*");
-  });  
+//TBAPI Integration
+var pendingRequest = false, pendingResult;
+function extractHostname(url) {
+	var hostname;
+	if (url.indexOf("//") > -1) {
+		hostname = url.split('/')[2];
+	} else {
+		hostname = url.split('/')[0];
+	}
+	hostname = hostname.split(':')[0];
+	hostname = hostname.split('?')[0];
+	return hostname;
 }
-window.addEventListener("message", function(e){
-  if (e && e.data && e.data.target === 'TEZBOX-EXT') {
-    if (typeof e.data.success != 'undefined' && e.data.success){
-      actions[e.data.action][0](e.data.data);      
-    } else {
-      actions[e.data.action][1](e.data.data);      
-    }
-    actions[e.data.action] = false;
-  }
-}, false);
+var getSender = function(s){
+	if (typeof s.url != 'undefined') return extractHostname(s.url);
+	else return false;
+}
 
+//Communication layer
 chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
-  if (request.action == 'sign' || request.action == 'getAddress'){
+  if (request.action == 'tbapiResult'){
+		pendingResult = request.data;
+		return false;
+  } else if (request.action == 'tbapi') {
+		var isWhitelisted = false, isBlacklisted = false, tbsettings = JSON.parse(localStorage.getItem('tbsetting')), tbstore = JSON.parse(localStorage.getItem('tbstore')), connectionError = {success:false, error:"Timeout or Communication error"};
+		sender = getSender(sender);
+		if (!tbstore || !tbsettings){
+			sendResponse({success:false, error:"TezBox not setup"});	
+			return false;
+		}
+		
+		//Legacy support
+		if (typeof tbsettings.whitelist == 'undefined') {
+			tbsettings.whitelist = [];
+			localStorage.setItem('tbsetting', JSON.stringify(tbsettings));
+		}
+		if (typeof tbsettings.blacklist == 'undefined') {
+			tbsettings.blacklist = [];
+			localStorage.setItem('tbsetting', JSON.stringify(tbsettings));
+		}
+		if (typeof tbsettings.apiMode == 'undefined') {
+			tbsettings.apiMode = true;
+			localStorage.setItem('tbsetting', JSON.stringify(tbsettings));
+		}
+		
+		isWhitelisted = (tbsettings.whitelist.indexOf(sender) >= 0);
+		isBlacklisted = (tbsettings.blacklist.indexOf(sender) >= 0);
+		
+		if (!tbsettings.apiMode) {
+			sendResponse({success:false, error:"API mode disabled"});			
+			return false;
+		}
+		if (pendingRequest) {
+			sendResponse({success:false, error:"Awaiting pending request"});
+			return false;
+		}
+		if (!sender) {
+			sendResponse({success:false, error:"Invalid sender"});
+			return false;
+		}
+		
+		//Public methods
+		if (isBlacklisted) {
+			sendResponse({success:false, error:"Blacklisted"});			
+			return false;
+		}
+		if (request.method == 'haveAccess'){
+			sendResponse({success:isWhitelisted});	
+			return false;
+		}
+		
+		if (request.method == 'requestAccess'){
+			if (isWhitelisted){
+				sendResponse({success:true});	
+				return false;
+			} else {
+				pendingRequest = true;
+				pendingResult = connectionError;
+				chrome.storage.local.set({ 
+					'promptData': sender     
+				});
+				chrome.windows.create({'url': chrome.extension.getURL("access.html"), 'type': 'popup','width': 357, 'height': 510,}, function(w) {
+					chrome.windows.onRemoved.addListener(function l(id) {
+						if(id === w.id){
+							pendingRequest = false;
+							sendResponse(pendingResult);
+							pendingResult = '';
+							chrome.windows.onRemoved.removeListener(l);
+						}
+					});          
+				});
+				return true;
+			}
+		} 
+		
+		//Secure methods
+		if (!isWhitelisted){
+			sendResponse({success:false, error:"Not whitelisted"});	
+			return false;
+		} 
+		if (request.method == 'getAllAccounts'){
+			sendResponse({success:true, data: tbstore.accounts});			
+			return false;
+		} 
+		if (request.method == 'initiateTransaction'){
+			pendingRequest = true;
+			pendingResult = connectionError;
+			console.log(request.data);
+			chrome.storage.local.set({ 
+				'promptData': request.data   
+			});//todo
+			chrome.windows.create({'url': chrome.extension.getURL("popup.html"), 'type': 'popup','width': 357, 'height': 500,}, function(w) {
+				chrome.windows.onRemoved.addListener(function l(id) {
+					if(id === w.id){
+						pendingRequest = false;
+						sendResponse(pendingResult);
+						pendingResult = false;
+						chrome.windows.onRemoved.removeListener(l);
+					}
+				});          
+			});
+			return true;
+		} 
+		return false;
+		//Following method TODO
+		if (request.method == 'signData'){
+			pendingRequest = true;
+			pendingResult = connectionError;
+			chrome.storage.local.set({ 
+				'promptData': {}
+			});//todo
+			chrome.windows.create({'url': chrome.extension.getURL("sign.html"), 'type': 'popup','width': 357, 'height': 510,}, function(w) {
+				chrome.windows.onRemoved.addListener(function l(id) {
+					if(id === w.id){
+						pendingRequest = false;
+						sendResponse(pendingResult);
+						pendingResult = false;
+						chrome.windows.onRemoved.removeListener(l);
+					}
+				});          
+			});
+			return true;
+		}
+	} else if (request.action == 'sign' || request.action == 'getAddress'){
     ledgerBridge(request.action, request.data)
     .then(function(r){
       sendResponse({success:true, data:r});
@@ -313,6 +456,7 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
     .catch(function(r){
       sendResponse({success:false, data:r});
     }); 
+		return true;
   } else {
     var ac = request.action.substr(2);
     if (ac == 'sign'){
@@ -328,6 +472,6 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
         sendResponse({success:false, data:r});
       });
     }
+		return true;
   }
-  return true;
 });

@@ -11,44 +11,16 @@ var app = angular.module('popup', [
 .config(function($routeProvider, $compileProvider) {
   $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|local|data|chrome-extension|moz-extension|file):/);
   $routeProvider
-  .when("/new", {
-    templateUrl : chrome.extension.getURL("app/views/new.html"),
-    controller : "NewController",
-  })
-  .when("/create", {
-    templateUrl : chrome.extension.getURL("app/views/create.html"),
-    controller : "CreateController",
-  })
-  .when("/restore", {
-    templateUrl : chrome.extension.getURL("app/views/restore.html"),
-    controller : "RestoreController",
-  })
-  .when("/link", {
-    templateUrl : chrome.extension.getURL("app/views/link.html"),
-    controller : "LinkController",
-  })
-  .when("/validate", {
-    templateUrl : chrome.extension.getURL("app/views/validate.html"),
-    controller : "ValidateController",
-  })
-  .when("/encrypt", {
-    templateUrl : chrome.extension.getURL("app/views/encrypt.html"),
-    controller : "EncryptController",
-  })
   .when("/main", {
-    templateUrl : chrome.extension.getURL("app/views/main.html"),
-    controller : "MainController",
+    templateUrl : chrome.extension.getURL("app/views/popup.html"),
+    controller : "PopupController",
   })
   .when("/unlock", {
-    templateUrl : chrome.extension.getURL("app/views/unlock.html"),
+    templateUrl : chrome.extension.getURL("app/views/unlock-popup.html"),
     controller : "UnlockController",
   })
-  .when("/setting", {
-    templateUrl : chrome.extension.getURL("app/views/setting.html"),
-    controller : "SettingController",
-  })
   .otherwise({
-    redirectTo: '/new'
+    redirectTo: '/unlock'
   });
 })
 .directive('tooltip', function(){

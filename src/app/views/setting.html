@@ -33,6 +33,43 @@
             </div>
           </div>
         </div>
+				<div class="col-md-12">
+          <div class="form-group">
+            <label>{{translate('api_mode')}}</label>
+            <p>{{translate('api_mode_info')}}</p>
+            <div class="row">
+              <div class="col-md-6">
+                <label class="switch">
+									<input type="checkbox" ng-model="setting.apiMode">
+									<span class="slider round"></span>
+								</label>
+              </div>
+            </div>
+            <label>{{translate('api_access_list')}}</label>
+            <p>{{translate('api_access_info')}}</p>
+						<div class="row">
+              <div class="col-md-6">
+								<label>{{translate('whitelist')}}</label>
+                <div class="accessList">
+									<ul>
+										<li ng-repeat="v in setting.whitelist track by $index"><a ng-click="removeFromList('whitelist', v)"><span aria-hidden="true">&times;</span></a>{{v}}</li>
+									</ul>
+								</div>
+                <a ng-click="clearList('whitelist')">{{translate('clear')}}</a>
+              </div>
+							<div class="col-md-6">
+								<label>{{translate('blacklist')}}</label>
+                <div class="accessList">
+									<ul>
+										<li ng-repeat="v in setting.blacklist track by $index"><a ng-click="removeFromList('blacklist', v)"><span aria-hidden="true">&times;</span></a>{{v}}</li>
+									</ul>
+								</div>
+                <a ng-click="clearList('blacklist')">{{translate('clear')}}</a>
+              </div>
+            </div>
+						
+          </div>
+        </div>
         <div class="col-md-3">
           <a ng-click="save()" class="btn btn-primary btn-block">{{translate('back')}}</a>
         </div>
