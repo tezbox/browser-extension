@@ -31,7 +31,6 @@ app.service('Storage', function() {
   };
   r.clearStore = function(){
     r.keys = {};
-    r.settings = {};
     r.password = '';
     r.restored = false;
     r.ico = false;

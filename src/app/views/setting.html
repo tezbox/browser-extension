@@ -22,7 +22,13 @@
             <p>{{translate('rpc_address_info')}}</p>
             <div class="row">
               <div class="col-md-6">
-                <input type="text" class="text-left form-control" ng-model="setting.rpc">
+								<input ng-show="showCustom" type="text" class="form-control" ng-model="customRpc">
+								<select ng-show="!showCustom" class="form-control" ng-model="rpc">
+									<option value="https://mainnet.tezrpc.me">Mainnet</option>
+									<option value="https://alphanet.tezrpc.me">Alphanet</option>
+									<option value="https://zeronet.tezrpc.me">Zeronet</option>
+								</select>
+								<p style='text-align:right'><a ng-show="!showCustom" style="cursor:pointer;" ng-click="customRpc = rpc; showCustom = true">Enter Custom Address</a><a ng-show="showCustom" style="cursor:pointer;" ng-click="customRpc = ''; showCustom = false;">View Default Options</a></p>
               </div>
             </div>
           </div>

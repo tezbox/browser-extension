@@ -1,18 +1,6 @@
 app
-.controller('LoadController', ['$scope', '$location', 'Storage',  function($scope, $location, Storage,) {
-  Storage.load().then(function(){
-    $scope.$apply(function(){
-      if (Storage.data.ensk && typeof Storage.keys.sk != 'undefined'){
-        return $location.path('/main');
-      }  else if (Storage.data.ensk){
-        return $location.path('/unlock');
-      } else {
-        return $location.path('/new');
-      }
-    });
-  });
-}])
 .controller('NewController', ['$scope', '$location', 'Storage', 'Lang', function($scope, $location, Storage, Lang) {
+  
   var routeUser = function(){
     if (Storage.loaded && typeof Storage.keys.sk != 'undefined'){
         return $location.path('/main');
@@ -63,7 +51,6 @@ app
   };
 }])
 .controller('CreateController', ['$scope', '$location', 'Storage', '$sce', function($scope, $location, Storage, $sce) {
-  Storage.load();
   $scope.passphrase = '';
   $scope.mnemonic = '';
   
@@ -122,6 +109,7 @@ app
     "PsYLVpVv" : "Mainnet",
     "PsddFKi3" : "Mainnet_003"
   }
+  
   if (!ss || !ss.ensk || typeof Storage.keys.sk == 'undefined'){
      return $location.path('/new');
   }
@@ -440,7 +428,6 @@ app
       }
     });
   };
-
   $scope.loadAccount = function(a){
     $scope.account = a;
     $scope.transactions = [];
@@ -476,7 +463,6 @@ app
     SweetAlert.swal(Lang.translate('awesome'), Lang.translate('copy_clipboard'), "success");
     window.copyToClipboard($scope.accounts[$scope.account].address);
   };
-
   $scope.clear = function(){
     $scope.amount = 0;
     $scope.customFee = 1420;
@@ -580,8 +566,10 @@ app
 								} else if (r == "TREZOR_ERROR") {
 									SweetAlert.swal(Lang.translate('uh_oh'), Lang.translate('operation_failed') + " " + "Trezor device error", 'error');
 								} else if (typeof r.errors != 'undefined'){
-									ee = r.errors[0].id.split(".").pop();
+									ee = r.errors[0].id;
 									SweetAlert.swal(Lang.translate('uh_oh'), Lang.translate('operation_failed') + " " + r.error + ": Error (" + ee + ")", 'error');
+								} else if (typeof r == 'string') {
+									SweetAlert.swal(Lang.translate('uh_oh'), Lang.translate('operation_failed') + " - " + r, 'error');
 								} else {
 									SweetAlert.swal(Lang.translate('uh_oh'), Lang.translate('operation_failed2'), 'error');
 								}
@@ -750,8 +738,20 @@ app
 }])
 .controller('SettingController', ['$scope', '$location', 'Storage', 'SweetAlert', 'Lang', function($scope, $location, Storage, SweetAlert, Lang) {
   $scope.setting = Storage.settings;
+	$scope.customRpc = '';
+	if (['https://mainnet.tezrpc.me','https://alphanet.tezrpc.me','https://zeronet.tezrpc.me'].indexOf($scope.setting.rpc) >= 0){
+		$scope.rpc = $scope.setting.rpc;
+		$scope.showCustom = false;		
+	} else {
+		$scope.rpc = "https://mainnet.tezrpc.me";
+		$scope.customRpc = $scope.rpc;
+		$scope.showCustom = true;		
+	}
   
   $scope.save = function(){
+		if ($scope.showCustom) $scope.setting.rpc = $scope.customRpc;
+		else $scope.setting.rpc = $scope.rpc;
+		
     Storage.setSetting($scope.setting);
     window.eztz.node.setProvider($scope.setting.rpc);
     return $location.path('/main');
@@ -778,7 +778,6 @@ app
     });
   }
   $scope.unlock = function(){
-    if (!$scope.password) return SweetAlert.swal(Lang.translate('uh_oh'), Lang.translate('please_enter_password'), 'error');
     window.showLoader();
     setTimeout(function(){
       $scope.$apply(function(){
@@ -860,7 +859,6 @@ app
   
 }])
 .controller('LinkController', ['$scope', '$location', 'Storage', 'SweetAlert', 'Lang', function($scope, $location, Storage, SweetAlert, Lang) {
-	if (!Storage.loaded) return $location.path('/load');
   $scope.type = 'ledger'; //ledger/trezor/offline
   $scope.address = '';
   $scope.data = "44'/1729'/0'/0'";
@@ -943,7 +941,6 @@ app
   };
 }])
 .controller('RestoreController', ['$scope', '$location', 'Storage', 'SweetAlert', 'Lang', function($scope, $location, Storage, SweetAlert, Lang) {
-	if (!Storage.loaded) return $location.path('/load');
   $scope.type = 'ico';
   $scope.seed = '';
   $scope.passphrase = '';
