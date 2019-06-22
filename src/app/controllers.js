@@ -752,8 +752,7 @@ app
 		$scope.customRpc = $scope.rpc;
 		$scope.showCustom = true;		
 	}
-  
-	$scope.removeFromList = function(l, v){
+  $scope.removeFromList = function(l, v){
 		if (['whitelist', 'blacklist'].indexOf(l) < 0) return false;
 		if ($scope.setting[l].indexOf(v) < 0) return false;
 		SweetAlert.swal({
