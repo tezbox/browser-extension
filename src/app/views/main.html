@@ -6,8 +6,22 @@
           <span class="logo"><img class="logoSmall" src="skin/images/logo.png" /> TEZBOX</span>
         </div>
         <div class="col-md-4 col-md-offset-2 text-right">
-          <a ng-click="viewSettings()"><i class="fa fa-cog" aria-hidden="true"></i></a>
-          <a ng-click="lock()"><i class="fa fa-lock" aria-hidden="true"></i></a>
+          <div class="btn-group managerAccount">
+            <a id="managerAccount" class="dropdown-toggle" data-target="dropdownAccounts" data-toggle="dropdown" ><blocky class="avatar" seed='{{getBlocky(mainAccounts[currentAccount].pkh)}}' size='8' scale='16'></blocky></a>
+
+            <div class="dropdown-menu" id="dropdownAccounts">
+              <ul class="myAccountsDrop">
+                <li class="account" ng-repeat="a in mainAccounts track by a.pkh"><a ng-click="loadManager($index)"><blocky class="avatar" seed='{{getBlocky(a.pkh)}}' size='8' scale='16'></blocky> {{a.accounts[0].title}}<span>{{a.pkh}}</span></a></li>
+                <li class="divider"><hr /></li>
+                <li class="sideButton" ><a style="padding-top: 8px!important;" ng-click="createManager()">{{translate("create_manager")}} <i class="fa fa-plus" ></i></a></li>
+                <li class="sideButton" ><a style="padding-top: 8px!important;" ng-click="restoreManager()">{{translate("restore_manager")}} <i class="fa fa-download" ></i></a></li>
+                <li class="sideButton" ><a style="padding-top: 8px!important;" ng-click="linkManager()">{{translate("connect_hardware")}} <i class="fa fa-link" ></i></a></li>
+                <li class="divider"><hr /></li>
+                <li class="sideButton" ><a style="padding-top: 8px!important;" ng-click="viewSettings()">{{translate("settings")}} <i class="fa fa-cog" ></i></a></li>
+                <li class="sideButton" ><a style="padding-top: 8px!important;" ng-click="lock()">{{translate("lock_wallet")}} <i class="fa fa-lock" ></i></a></li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -179,22 +193,21 @@
               </div>
               <div role="tabpanel" class="tab-pane" id="delegate">
                 <div class="row">
-                  <div class="col-md-12" ng-show="account > 0 && delegateType == ''">
-                    <p class="alert alert-info"><i class="leftIcon fas fa-exclamation-circle"></i><strong>{{translate("ensure_delegate")}}</strong></p>
+                  <div class="col-md-12" ng-show="account == 0 && delegateType == ''">
+                    <p class="alert alert-info"><i class="leftIcon fas fa-exclamation-circle"></i><strong>{{translate("comingsoon_delegate")}}</strong></p>
                   </div>
-                  <div class="col-md-12" ng-show="account > 0 && delegateType != ''">
+                  <div class="col-md-12" ng-show="account == 0 && delegateType != ''">
                     <p class="alert alert-danger"><i class="leftIcon fas fa-exclamation-circle"></i><strong>{{translate("endorse_delegate")}}</strong></p>
                   </div>
-                  <div class="col-md-12" ng-show="account == 0">
-                    <p class="alert alert-danger"><i class="leftIcon fas fa-exclamation-circle"></i><strong>{{translate("disabled_delegate")}}</strong></p>
+                  <div class="col-md-12" ng-show="account != 0">
+                    <p class="alert alert-danger"><i class="leftIcon fas fa-exclamation-circle"></i><strong>{{translate("comingsoon_delegate")}}</strong></p>
                   </div>
                 </div>
-                <div class="row" ng-show="account == 0">
+                <div class="row" ng-show="account != 0">
                   <div class="col-md-4 col-lg-3" >
-                    <a ng-click="add()" class="btn btn-primary btn-block">{{translate('add_account')}}</a>
                   </div>
                 </div>
-                <div ng-show="account > 0">
+                <div ng-show="account == 0">
                   <div class="row mt-20">
                     <div class="col-lg-4 col-md-6">
                       <div class="form-group">
@@ -268,6 +281,15 @@
                       <a ng-show="privateKey" ng-click="privateKey = ''" class="btn btn-primary btn-small btn-block">{{translate('hide')}}</a>
                     </div>
                   </div>
+                  <div ng-show="type == 'ledger' || type == 'trezor'" class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label>{{translate('hd_path')}}</label>
+                        <p>{{translate('hd_path_info')}}</p>
+                        <p class="display-privatekey"><strong>{{hd_path}}</strong></p>
+                      </div>
+                    </div>
+                  </div>
                   <div class="row">
                     <div class="col-md-12">
                       <div class="form-group">
@@ -284,17 +306,31 @@
                       <a ng-click="import()" class="btn btn-small btn-primary btn-block">{{translate('import')}}</a>
                     </div>
                   </div>
-                </div>
-                <div class="row" ng-show="account > 0">
-                  <div class="col-md-12">
-                    <div class="form-group">
-                      <label>{{translate('remove_account')}}</label>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label>{{translate('remove_account')}}</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4">
+                      <a ng-click="remove()" class="btn btn-small btn-primary btn-block">{{translate('remove_account')}}</a>
                     </div>
                   </div>
                 </div>
-                <div class="row" ng-show="account > 0">
-                  <div class="col-lg-3 col-md-4">
-                    <a ng-click="remove()" class="btn btn-small btn-primary btn-block">{{translate('remove_account')}}</a>
+                <div ng-show="account > 0">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="form-group">
+                        <label>{{translate('remove_conract')}}</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4">
+                      <a ng-click="remove()" class="btn btn-small btn-primary btn-block">{{translate('remove_conract')}}</a>
+                    </div>
                   </div>
                 </div>
               </div>
