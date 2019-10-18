@@ -1,7 +1,7 @@
 {
 	"name": "TezBox - Tezos Wallet",
 	"short_name": "TezBox",
-	"version": "15.0.0",
+	"version": "20.0.1",
 	"manifest_version": 2,
 	"author": "https://tezbox.com",
 	"description": "Secure Tezos Wallet from your browser",
