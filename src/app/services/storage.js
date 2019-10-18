@@ -85,8 +85,6 @@ app.service('Storage', function() {
     };
     r.data.accounts.push(tempaccount);
     r.keys.push(tempkey);
-    console.log(tempkey);
-    console.log(r.keys);
     r.data.account = (r.data.accounts.length-1);
     r.newKey = false;
     tempaccount = '';
@@ -98,7 +96,7 @@ app.service('Storage', function() {
       if (typeof v != 'undefined') r.data = v;
       if (typeof k != 'undefined') r.keys = k;
       if (typeof p != 'undefined') r.password = p;
-      r.data.version = r.storageVersion;
+      if (typeof r.data.version == 'undefined') r.data.version = r.storageVersion;
       localStorage.setItem('tbstore', JSON.stringify(r.data));
   };
   r.clearStore = function(){
