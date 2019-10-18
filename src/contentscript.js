@@ -9,4 +9,3 @@ window.addEventListener("message", function(event) {
     	window.postMessage({ direction : "out", type : event.data.type, response : response}, "*");
   });
 }, false);
-console.log("TezBox API is ready!");

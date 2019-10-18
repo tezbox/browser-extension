@@ -412,7 +412,6 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
 		if (request.method == 'initiateTransaction'){
 			pendingRequest = true;
 			pendingResult = connectionError;
-			console.log(request.data);
 			chrome.storage.local.set({ 
 				'promptData': request.data   
 			});//todo
