@@ -245,6 +245,11 @@ app
     window.eztz.rpc.getHead().then(function(r){
       $scope.$apply(function(){
         $scope.currentProto = r.protocol.substr(0,8);
+        if (window.eztz.getProtocol().substr(0,8) != $scope.currentProto){
+          console.log("PROTOCOL CHANGED TO " + $scope.currentProto);
+          window.eztz.setProtocol();
+        }
+        $scope.currentProto
         $scope.block = {
           net : r.chain_id,
           level : r.header.level,
